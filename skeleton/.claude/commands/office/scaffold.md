@@ -5,12 +5,13 @@ description: Scaffold an artifact document for a pipeline stage. Usage: /office:
 $ARGUMENTS format: `<slug> <stage>`
 
 - **slug**: project identifier (e.g. `user-profile-edit`)
-- **stage**: artifact type to scaffold — `prd` | `adr` | `plan` | `tasks` | `status` | `review` | `runbook`
+- **stage**: artifact type to scaffold — `discuss` | `prd` | `adr` | `plan` | `tasks` | `status` | `review` | `runbook`
 
 Output path conventions:
 
 | Stage | Output path |
 |-------|-------------|
+| `discuss` | `.ai-office/docs/context/<slug>.md` |
 | `prd` | `.ai-office/docs/prd/<slug>.md` |
 | `adr` | `.ai-office/docs/adr/<slug>.md` |
 | `plan` | `.ai-office/docs/runbooks/<slug>-plan.md` |
@@ -22,6 +23,31 @@ Output path conventions:
 ---
 
 ## Templates
+
+### `discuss`
+```
+# Context: <slug>
+
+**Request:** <original request — fill in from context>
+**Date:** <today ISO>
+**Type:** <request type>
+
+## Constraints
+
+<known constraints, or "None stated">
+
+## Existing Patterns
+
+<relevant codebase patterns, or "None stated">
+
+## Ruled Out
+
+<approaches already ruled out, or "None stated">
+
+## Additional Context
+
+<any other relevant notes>
+```
 
 ### `prd`
 ```
@@ -195,6 +221,36 @@ See `.ai-office/tasks/` kanban board for task files.
 
 ---
 
+### `runbook`
+```
+# Runbook: <slug>
+
+**Created:** <today>
+**Owner:** Ops
+
+## Purpose
+
+> What does this runbook cover?
+
+## Prerequisites
+
+-
+
+## Steps
+
+1.
+
+## Rollback
+
+-
+
+## Notes
+```
+
+---
+
 Check if the output file already exists. If it does, warn: "File already exists at `<path>`. Overwrite? (respond with 'yes' to confirm)"
 
 If creating: write the appropriate template to the output path with `<slug>` replaced throughout and `<today>` replaced with today's date. Then confirm: "Scaffolded `<stage>` → `<path>`"
+
+<!-- ai-office-version: 1.4.0 -->

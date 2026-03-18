@@ -131,3 +131,5 @@ Recommendations:
 - **≥ 9**: Approved
 - **7–8.9**: Needs revision (minor)
 - **< 7**: Major changes required
+
+<!-- ai-office-version: 1.4.0 -->

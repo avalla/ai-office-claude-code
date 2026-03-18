@@ -212,4 +212,4 @@ Otherwise accept a list of field names and ask only for those values. Keep all o
 3. Run the equivalent of `/office:doctor` inline and show the result
 4. Suggest: "Run `/office:route <describe your next task>` to get started"
 
-<!-- ai-office-version: 1.3.0 -->
+<!-- ai-office-version: 1.4.0 -->

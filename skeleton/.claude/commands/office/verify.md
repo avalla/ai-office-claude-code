@@ -82,8 +82,9 @@ Do not just report "tests failed" — identify *why*.
 ```
 ✅ Verification passed — <N> criteria met
 
-Recommended: move task to DONE
-  /office:task-move <task-id> DONE
+Recommended: move task to REVIEW and advance the pipeline
+  /office:task-move <task-id> REVIEW
+  /office:advance <slug> "verification passed — <N> criteria met"
 ```
 
 Update the task file: check off all passing items in `## Acceptance Criteria`.
@@ -106,4 +107,4 @@ Append to the task's `## History`:
 - <today ISO>: Verify failed — <N> criteria failed, returned to WIP
 ```
 
-<!-- ai-office-version: 1.3.0 -->
+<!-- ai-office-version: 1.4.0 -->

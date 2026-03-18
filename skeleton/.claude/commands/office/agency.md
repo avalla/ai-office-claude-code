@@ -111,4 +111,4 @@ Confirm:
 Run /office:agency list to review.
 ```
 
-<!-- ai-office-version: 1.3.0 -->
+<!-- ai-office-version: 1.4.0 -->

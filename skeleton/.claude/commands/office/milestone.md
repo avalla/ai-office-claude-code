@@ -218,7 +218,15 @@ Overdue: — (target not passed)
 
 1. Read the milestone file. Status must be `complete` first — if not, refuse: "Milestone must be closed before archiving."
 2. Update frontmatter: `status: archived`, add `archived: <today ISO>`.
-3. Move any remaining tasks for this milestone to `.ai-office/tasks/ARCHIVED/` (if not already there).
+3. Find all task files for this milestone: scan every column subdirectory of `.ai-office/tasks/` for `.md` files whose names start with `<id>_`. For each file **not already in ARCHIVED**:
+   - Update its `**Status:**` field to `ARCHIVED`
+   - Prepend `[ARCHIVED] ` to the title heading (if not already present)
+   - Set `**Completed:**` to today's ISO date (if currently `—`)
+   - Append to `## History`: `- <today ISO>: Archived with milestone <id>`
+   - Move the file to `.ai-office/tasks/ARCHIVED/`
+   - Decrement the count for the old column and increment ARCHIVED in `.ai-office/tasks/README.md`
+
+   Repeat for each task file in sequence (there is no bulk move — process them one by one).
 4. Confirm: "Milestone `<id>` archived. N tasks moved to ARCHIVED."
 
-<!-- ai-office-version: 1.3.0 -->
+<!-- ai-office-version: 1.4.0 -->

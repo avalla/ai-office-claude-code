@@ -5,7 +5,7 @@ description: Move a task to a different kanban column. Usage: /office:task-move 
 $ARGUMENTS format: `<task-id> <column> [reason]`
 
 - **task-id**: task ID like `M1_T003`, or partial filename match (e.g. `fix-upload`)
-- **column**: target column — `BACKLOG` | `TODO` | `WIP` | `REVIEW` | `DONE` | `ARCHIVED`
+- **column**: target column — `BACKLOG` | `TODO` | `WIP` | `REVIEW` | `BLOCKED` | `DONE` | `ARCHIVED`
 - **reason**: optional note to record in the task file
 
 ---
@@ -21,6 +21,7 @@ $ARGUMENTS format: `<task-id> <column> [reason]`
    - If moving to `WIP`: set `**Started:**` to today's ISO date (if currently `—`)
    - If moving to `DONE`: set `**Completed:**` to today's ISO date
    - If moving to `ARCHIVED`: set `**Completed:**` to today's ISO date (if currently `—`) and prepend `[ARCHIVED] ` to the title heading
+   - If moving to `BLOCKED`: a reason is strongly recommended — if none provided, append a warning note: `<today ISO>: moved to BLOCKED — no reason given; add unblock criteria`
    - If reason provided: append a row to `## Notes`: `<today ISO>: moved to <column> — <reason>`
    - **Append to `## History`**: `- <today ISO date>: <OLD_COLUMN> → <NEW_COLUMN><if reason: — reason>`
 
@@ -33,4 +34,4 @@ $ARGUMENTS format: `<task-id> <column> [reason]`
 
 6. Confirm: "Moved `<task-id>`: `<OLD_COLUMN>` → `<NEW_COLUMN>`"
 
-<!-- ai-office-version: 1.3.0 -->
+<!-- ai-office-version: 1.4.0 -->

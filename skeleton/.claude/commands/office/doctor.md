@@ -82,4 +82,4 @@ Issues to fix:
 - <list any WARN or FAIL items with suggested fix>
 ```
 
-<!-- ai-office-version: 1.3.0 -->
+<!-- ai-office-version: 1.4.0 -->

@@ -14,7 +14,7 @@ $ARGUMENTS format (all optional): `[column] [ms:M1] [assignee:name]`
 
 1. Determine which columns to scan:
    - If a specific column is given: scan only that column
-   - If no column arg: scan all active columns (`BACKLOG`, `TODO`, `WIP`, `REVIEW`, `DONE`)
+   - If no column arg: scan all active columns (`BACKLOG`, `TODO`, `WIP`, `REVIEW`, `BLOCKED`, `DONE`)
    - `ARCHIVED` is **never** included by default — only when explicitly requested (`/office:task-list ARCHIVED`)
 
    Active column dirs:
@@ -22,6 +22,7 @@ $ARGUMENTS format (all optional): `[column] [ms:M1] [assignee:name]`
    - `.ai-office/tasks/TODO/`
    - `.ai-office/tasks/WIP/`
    - `.ai-office/tasks/REVIEW/`
+   - `.ai-office/tasks/BLOCKED/`
    - `.ai-office/tasks/DONE/`
    - `.ai-office/tasks/ARCHIVED/` (only when explicitly requested)
 
@@ -32,6 +33,7 @@ $ARGUMENTS format (all optional): `[column] [ms:M1] [assignee:name]`
    - Priority (`**Priority:**`)
    - Assignee (`**Assignee:**`)
    - Status/column (`**Status:**`)
+   - Labels (`**Labels:**`)
    - Dependencies (`**Dependencies:**`)
    - Estimate (`**Estimate:**`)
    - Total Time (`**Total Time:**`)
@@ -42,13 +44,17 @@ $ARGUMENTS format (all optional): `[column] [ms:M1] [assignee:name]`
 
 ```
 ## WIP (2)
-| ID | Milestone | Title | Priority | Assignee | Estimate | Time |
-|----|-----------|-------|----------|----------|----------|------|
-| M1_T003 | M1 | Fix upload timeout | HIGH | Developer | 4h | 1.5h |
-| M2_T001 | M2 | Auth middleware | MEDIUM | Security | 2h | 0h |
+| ID | Milestone | Title | Priority | Assignee | Labels | Estimate | Time |
+|----|-----------|-------|----------|----------|--------|----------|------|
+| M1_T003 | M1 | Fix upload timeout | HIGH | Developer | bug,perf | 4h | 1.5h |
+| M2_T001 | M2 | Auth middleware | MEDIUM | Security | auth | 2h | 0h |
+
+## BLOCKED (1)
+| ID | Milestone | Title | Priority | Assignee | Labels | Estimate | Time |
+...
 
 ## TODO (1)
-| ID | Milestone | Title | Priority | Assignee | Estimate | Time |
+| ID | Milestone | Title | Priority | Assignee | Labels | Estimate | Time |
 ...
 ```
 
@@ -59,3 +65,5 @@ Milestones: M0 (3 tasks) · M1 (5 tasks) · M2 (2 tasks)
 ```
 
 If no tasks found in the requested scope, say so clearly.
+
+<!-- ai-office-version: 1.4.0 -->

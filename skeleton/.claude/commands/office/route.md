@@ -26,14 +26,14 @@ Silently determine the request type (do not output this step):
 
 | Request type | Pipeline path |
 |---|---|
-| New feature / new capability | `discuss → prd → adr → plan → tasks → dev → qa → verify → review → release` |
-| Bug fix | `discuss → dev → qa → verify → review` |
-| Refactor / cleanup | `discuss → plan → tasks → dev → qa → verify → review` |
-| Security issue | `discuss → security → dev → qa → verify → review` |
-| UX / design work | `discuss → ux_research → design_ui → dev → qa → verify → review` |
-| Quick fix (< 1h, no design) | `dev` |
+| New feature / new capability | `discuss → prd → adr → plan → tasks → dev → qa → verify → review → user_acceptance → release` |
+| Bug fix | `discuss → dev → qa → verify → review → release` |
+| Refactor / cleanup | `discuss → plan → tasks → dev → qa → verify → review → release` |
+| Security issue | `discuss → security → dev → qa → verify → review → release` |
+| UX / design work | `discuss → ux_research → design_ui → dev → qa → verify → review → release` |
+| Quick fix (< 1h, no design) | `dev → release` |
 | Import / onboard project | `discuss → create_project → prd → adr → plan → tasks` |
-| New full project | `discuss → create_project → prd → adr → plan → tasks → dev` |
+| New full project | `discuss → create_project → prd → adr → plan → tasks → dev → qa → verify → review → user_acceptance → release` |
 
 Also derive:
 - **type**: one of the row labels above
@@ -111,9 +111,11 @@ Next: <exact command>
 ```
 
 **Next command** by type:
-- New feature / project: `Run /office:scaffold <slug> prd`
-- Bug fix / security: `Run /office:task-create <title> ms:M0 labels:<type>`
-- Refactor: `Run /office:scaffold <slug> plan`
+- New feature / project: `Run /office:scaffold <slug> prd` then `Run /office:scaffold <slug> status`
+- Bug fix / security: `Run /office:scaffold <slug> status` then `Run /office:task-create <title> ms:M0 labels:<type>`
+- Refactor: `Run /office:scaffold <slug> plan` then `Run /office:scaffold <slug> status`
 - Quick fix: `Run /office:task-create <title> ms:M0 priority:HIGH`
 
-<!-- ai-office-version: 1.3.0 -->
+> The status file (`<slug>-status.md`) is required by `/office:advance`, `/office:run-tests`, and `/office:status`. Always scaffold it before advancing the pipeline.
+
+<!-- ai-office-version: 1.4.0 -->

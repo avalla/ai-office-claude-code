@@ -54,7 +54,7 @@ Artifact: `.ai-office/docs/runbooks/<slug>-plan.md`
 ### `tasks`
 Artifact: `.ai-office/tasks/` (all columns)
 - [ ] At least one task file exists for this slug or feature
-- [ ] No tasks stuck in WIP for more than a sprint (check file dates if available)
+- [ ] No tasks stuck in WIP for more than 14 days (check file modification dates — warn if any WIP task file has not been updated in > 14 days)
 - [ ] README.md counts are consistent with actual file counts
 
 ### `dev`
@@ -115,3 +115,5 @@ Blocking issues: acceptance criteria missing in .ai-office/docs/prd/<slug>.md
 ```
 
 Only block advance on ❌ FAIL items. ⚠️ WARN items are advisory.
+
+<!-- ai-office-version: 1.4.0 -->

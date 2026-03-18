@@ -1,8 +1,8 @@
 ---
-description: Generate a project report. Usage: /office:report <status|investor|tech-debt|audit>
+description: Generate a project report. Usage: /office:report <status|investor|tech-debt|audit|velocity>
 ---
 
-$ARGUMENTS: `<status|investor|tech-debt|audit>`
+$ARGUMENTS: `<status|investor|tech-debt|audit|velocity>`
 
 ---
 
@@ -40,7 +40,7 @@ Output:
 
 ## Report: `investor`
 
-Read all status files, task counts, git log (last 10 commits via bash), and any existing investor report in `.ai-office/docs/`.
+Read all status files, task counts, and any existing investor report in `.ai-office/docs/`. Run `git log --oneline -10` as a bash command to get the last 10 commits.
 
 Output a concise investor update:
 ```
@@ -97,3 +97,48 @@ Read all status files and task files. Produce a structured audit:
 ## Recommendations
 - Prioritized action items
 ```
+
+---
+
+## Report: `velocity`
+
+Read all task files in `.ai-office/tasks/DONE/` and `.ai-office/tasks/ARCHIVED/`. Group completed tasks by milestone and by week (using `**Completed:**` date).
+
+Output:
+
+```
+# Velocity Report — <today>
+
+## Tasks Completed by Milestone
+
+| Milestone | Total Done | HIGH | MEDIUM | LOW |
+|-----------|-----------|------|--------|-----|
+| M1        | 7         | 3    | 3      | 1   |
+| M2        | 2         | 1    | 1      | 0   |
+| M0        | 3         | 0    | 2      | 1   |
+
+## Weekly Throughput (last 4 weeks)
+
+| Week        | Tasks Completed |
+|-------------|----------------|
+| <week 1>    | X              |
+| <week 2>    | X              |
+| <week 3>    | X              |
+| <week 4>    | X              |
+
+## Avg throughput: X tasks/week
+
+## In Progress (WIP)
+
+- X tasks currently in WIP
+- Assignees: <list unique assignees in WIP>
+
+## Observations
+
+- <Note any milestone with 0 completions in the past 2 weeks>
+- <Note any assignee with > 3 tasks in WIP simultaneously>
+```
+
+If no completed tasks exist, say so and suggest running `/office:task-move <id> DONE` as tasks are finished.
+
+<!-- ai-office-version: 1.4.0 -->

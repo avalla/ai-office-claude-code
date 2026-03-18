@@ -67,7 +67,11 @@ Loop guards (increment counter in status file):
 
 1. **Read advance_mode**: read `.ai-office/project.config.md` and extract `advance_mode`. Default: `manual`.
 
-2. **Read current state**: read `.ai-office/docs/runbooks/<slug>-status.md` to get current state.
+2. **Read current state**: read `.ai-office/docs/runbooks/<slug>-status.md` to get current state. If the file does not exist, stop and output:
+   ```
+   ⚠️  No status file found for '<slug>'.
+   Run /office:scaffold <slug> status to create one, then set its initial state with /office:status <slug> <stage>.
+   ```
 
 3. **Determine the next stage**: use the `[next-stage]` argument if provided, otherwise use the transition table above.
 
@@ -103,16 +107,24 @@ Loop guards (increment counter in status file):
    - Set `Updated:` to today's date
    - Append a row to the Review Log: `| <today> | <new-agent> | <new-stage> | <evidence> |`
 
-7. **Reassign tasks**: scan `.ai-office/tasks/` (BACKLOG, TODO, WIP, REVIEW columns — not DONE or ARCHIVED) for files whose name or `**ID:**` field contains the slug. For each:
+7. **Reassign tasks**: scan `.ai-office/tasks/` (BACKLOG, TODO, WIP, REVIEW, BLOCKED columns — not DONE or ARCHIVED) for tasks belonging to this slug. A task belongs to this slug if **any** of the following match:
+   - `**Slug:**` field equals `<slug>` (preferred — explicit link)
+   - The filename's task-title segment contains `<slug>` as a substring (e.g. filename `M1_T003-user-profile-edit-developer.md` matches slug `user-profile-edit`)
+
+   For each matched task:
    - Update `**Assignee:**` to the responsible agent for the new stage
    - If moving into an active work stage (`dev`, `qa`, `security`, `design_ui`) and task is in `BACKLOG` or `TODO`: move it to `TODO` (do not auto-move to WIP — that's the agent's job)
    - Append a note to `## Notes`: `<today ISO>: reassigned to <agent> (stage: <new-stage>)`
+
+   If no tasks are found, note: "No tasks matched slug `<slug>` — tasks may need a `**Slug:**` field set via `/office:task-update`."
 
 8. **Respond**:
    ```
    Advanced `<slug>`: `<old-state>` → `<new-state>`
    Tasks reassigned to: <agent> (N tasks updated)
    ```
+
+<!-- ai-office-version: 1.4.0 -->
 
 9. **Next action**: show the recommended action for the new stage:
    - `prd` → "Run `/office:scaffold <slug> prd` to create the PRD"
