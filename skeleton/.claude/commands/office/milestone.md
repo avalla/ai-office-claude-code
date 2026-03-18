@@ -1,8 +1,8 @@
 ---
-description: Manage project milestones. Usage: /office:milestone <create <id> <name> [target:YYYY-MM-DD]|list|status <id>|close <id>|archive <id>>
+description: Manage project milestones. Usage: /office:milestone <create <id> <name> [target:YYYY-MM-DD] [tasks:yes|no|ask]|list|status <id>|close <id>|archive <id>>
 ---
 
-$ARGUMENTS format: `<create <id> <name> [target:YYYY-MM-DD] | list | status <id> | close <id> | archive <id>>`
+$ARGUMENTS format: `<create <id> <name> [target:YYYY-MM-DD] [tasks:yes|no|ask] | list | status <id> | close <id> | archive <id>>`
 
 Milestones directory: `.ai-office/milestones/`
 Each milestone is a file: `.ai-office/milestones/<id>.md`
@@ -11,11 +11,93 @@ Milestone IDs are short identifiers like `M1`, `M2`, `sprint-1`, `alpha`. `M0` i
 
 ---
 
-## `create <id> <name> [target:YYYY-MM-DD]`
+## `create <id> <name> [target:YYYY-MM-DD] [tasks:yes|no|ask]`
 
-1. Check that `<id>` is not `M0`. If it is, refuse with: "M0 is reserved for unscheduled tasks."
+Arguments:
+- **id**: milestone identifier (e.g. `M1`, `v1.2`, `sprint-3`)
+- **name**: human-readable goal (e.g. `"Notifications working"`)
+- **target**: optional due date `YYYY-MM-DD`
+- **tasks**: task generation mode — `ask` (default), `yes` (auto-create without prompting), `no` (skip)
+
+### Steps
+
+1. Check that `<id>` is not `M0`. If it is, refuse: "M0 is reserved for unscheduled tasks."
 2. Check if `.ai-office/milestones/<id>.md` already exists. If so, warn and stop.
-3. Create `.ai-office/milestones/<id>.md`:
+3. **Gather context** — read the following if they exist:
+   - `.ai-office/project.config.md` → `agency`, `project_name`, `ui_framework`
+   - Any PRD in `.ai-office/docs/prd/` whose filename or title relates to the milestone name (fuzzy match)
+   - Any ADR in `.ai-office/docs/adr/` similarly related
+   - Existing tasks in `.ai-office/tasks/` for this milestone (in case the ID was used before)
+4. **Generate task suggestions** — reason about `<name>` plus any gathered context to produce a list of tasks that represent the work needed to reach this milestone.
+
+   **Reasoning rules:**
+   - Cover the full pipeline for each deliverable: backend logic, API/integration layer, UI (if `ui_framework` is set), tests, and docs/runbook
+   - Group related work into cohesive tasks (not micro-tasks); aim for tasks completable in ≤ 1 day
+   - Assign each task to the appropriate agent based on its type (see agent mapping below)
+   - Suggest realistic priorities: `high` for blocking work, `medium` for core features, `low` for polish/docs
+   - Estimate effort: `1h`–`8h` per task; flag anything over `8h` as "consider splitting"
+   - Suggest 4–12 tasks — if the milestone scope seems larger, note it and suggest sub-milestones
+
+   **Agent assignment heuristics:**
+
+   | Task type | Agent |
+   |-----------|-------|
+   | DB schema, migrations, RLS | `developer` |
+   | API endpoints, business logic | `developer` |
+   | UI components, screens | `developer` |
+   | State management, hooks | `developer` |
+   | Unit + integration tests | `qa` |
+   | E2E / acceptance tests | `qa` |
+   | Security review | `security-specialist` |
+   | Performance audit | `reviewer` |
+   | Architecture decision | `architect` |
+   | PRD / requirements doc | `pm` |
+   | Runbook / ops doc | `ops` |
+   | Design mockup | `designer` |
+
+5. **Present the suggested tasks:**
+
+   ```
+   Milestone <id>: <name>
+
+   Suggested tasks (N):
+
+   | # | Title | Assignee | Priority | Estimate |
+   |---|-------|----------|----------|----------|
+   | 1 | Create notifications table + RLS | developer | high | 2h |
+   | 2 | Implement send-notification edge function | developer | high | 3h |
+   | 3 | Add notification preferences to user profile | developer | medium | 2h |
+   | 4 | Build notification bell UI component | developer | medium | 4h |
+   | 5 | Write unit tests for notification logic | qa | medium | 2h |
+   | 6 | E2E test: user receives notification | qa | medium | 2h |
+   | 7 | Security review: notification payload validation | security-specialist | high | 1h |
+   | 8 | Runbook: deploy and rollback procedure | ops | low | 1h |
+   ```
+
+6. **Task creation mode:**
+
+   - If `tasks:no`: confirm milestone created, skip to step 7. Suggest: "Run `/office:task-create` to add tasks manually."
+   - If `tasks:yes` OR (`tasks:ask` AND `advance_mode` is `auto`): create all suggested tasks immediately (step 6a).
+   - If `tasks:ask` AND `advance_mode` is `manual` (default): ask:
+     ```
+     Create these tasks? Options:
+       all      — create all N tasks as shown
+       select   — I'll tell you which numbers to create (e.g. "1 2 3 5")
+       edit     — show me each task to adjust before creating
+       none     — skip, I'll create tasks manually
+     ```
+     Wait for the user's response, then proceed accordingly.
+
+   **6a — Creating tasks:**
+   For each task to create, call the same logic as `/office:task-create` with:
+   - title from the suggestion
+   - `ms:<id>`
+   - `assignee:<agent>`
+   - `priority:<priority>`
+   - `estimate:<estimate>`
+   - Auto-assign the next available task number within this milestone (scan existing `<id>_T*` files)
+
+7. **Create `.ai-office/milestones/<id>.md`**, populating Goals and Definition of Done from the task list:
 
 ```markdown
 ---
@@ -34,17 +116,25 @@ created: <today ISO>
 
 ## Goals
 
-> Describe what this milestone delivers.
+> <one-sentence summary inferred from the milestone name and tasks>
 
 ## Definition of Done
 
-- [ ]
+<one checkbox per suggested task title>
+- [ ] <task 1 title>
+- [ ] <task 2 title>
+...
 
 ## Notes
 ```
 
-4. Update `.ai-office/milestones/README.md` — add a row for this milestone (create the file if it doesn't exist).
-5. Confirm: "Created milestone `<id>`: **<name>**" + suggest running `/office:task-create` with `ms:<id>`.
+8. Update `.ai-office/milestones/README.md` — add a row for this milestone (create the file if it doesn't exist).
+9. Confirm:
+   ```
+   ✅ Milestone <id> created: <name>
+   Tasks created: N  (or "skipped")
+   Run `/office:milestone status <id>` to see progress.
+   ```
 
 ---
 
@@ -77,6 +167,10 @@ If no milestones exist: "No milestones defined. Run `/office:milestone create M1
 1. Read `.ai-office/milestones/<id>.md`.
 2. Scan `.ai-office/tasks/` (all columns including ARCHIVED) for files starting with `<id>_`.
 3. Group tasks by column.
+4. Compute completion stats:
+   - Total tasks, done count, percentage
+   - Breakdown by priority: count done vs total for each of HIGH / MEDIUM / LOW
+   - List any unique labels across all tasks for this milestone
 
 Output:
 
@@ -85,6 +179,13 @@ Milestone M1: Auth & Onboarding
 Target: 2026-04-01 · Status: active
 
 Progress: ████████░░ 4/7 tasks done (57%)
+
+By priority:
+  HIGH    3/4 done  ███░
+  MEDIUM  1/2 done  █░
+  LOW     0/1 done  ░
+
+Labels in use: bug, auth, feature
 
 DONE (4)
   ✅ M1_T001-setup-db-developer
@@ -119,3 +220,5 @@ Overdue: — (target not passed)
 2. Update frontmatter: `status: archived`, add `archived: <today ISO>`.
 3. Move any remaining tasks for this milestone to `.ai-office/tasks/ARCHIVED/` (if not already there).
 4. Confirm: "Milestone `<id>` archived. N tasks moved to ARCHIVED."
+
+<!-- ai-office-version: 1.3.0 -->

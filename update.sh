@@ -36,17 +36,39 @@ elif version_gt "$INSTALLED" "$AVAILABLE"; then
   [[ "$confirm" =~ ^[Yy]$ ]] || exit 0
 fi
 
+# ── Extract ai-office-version annotation from a file ─────────────────────────
+get_file_version() {
+  grep -m1 'ai-office-version:' "$1" 2>/dev/null \
+    | sed 's/.*ai-office-version:[[:space:]]*//' \
+    | tr -d ' -->' \
+    || echo ""
+}
+
 # ── Show what will change ─────────────────────────────────────────────────────
 echo "Commands to update:"
+any_change=0
 for src in "$FRAMEWORK_DIR/skeleton/.claude/commands/office/"*.md; do
   name="$(basename "$src")"
   dst="$PROJECT_ROOT/.claude/commands/office/$name"
   if [[ ! -f "$dst" ]]; then
     echo "  + $name (new)"
-  elif ! diff -q "$src" "$dst" > /dev/null 2>&1; then
-    echo "  ~ $name (changed)"
+    any_change=1
+  else
+    src_ver="$(get_file_version "$src")"
+    dst_ver="$(get_file_version "$dst")"
+    if [[ -n "$src_ver" && -n "$dst_ver" && "$src_ver" != "$dst_ver" ]]; then
+      echo "  ~ $name (v$dst_ver → v$src_ver)"
+      any_change=1
+    elif ! diff -q "$src" "$dst" > /dev/null 2>&1; then
+      echo "  ~ $name (changed)"
+      any_change=1
+    fi
   fi
 done
+
+if [[ "$any_change" -eq 0 ]]; then
+  echo "  (no command files changed)"
+fi
 echo ""
 
 read -p "Apply update v$INSTALLED → v$AVAILABLE? [Y/n] " confirm

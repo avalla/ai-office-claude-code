@@ -31,6 +31,14 @@ cp "$SKELETON/.claude/commands/office/"*.md "$PROJECT_ROOT/.claude/commands/offi
 echo "$VERSION" > "$PROJECT_ROOT/.claude/commands/office/.version"
 echo "  ✅ $(ls "$SKELETON/.claude/commands/office/"*.md | wc -l | tr -d ' ') commands installed"
 
+# CLAUDE.md (only if not exists)
+if [[ ! -f "$PROJECT_ROOT/.claude/CLAUDE.md" ]]; then
+  cp "$SKELETON/.claude/CLAUDE.md" "$PROJECT_ROOT/.claude/CLAUDE.md"
+  echo "  ✅ CLAUDE.md installed"
+else
+  echo "  ↩️  CLAUDE.md already exists, skipped"
+fi
+
 # ── Create .ai-office/ structure ──────────────────────────────────────────────
 echo "→ Setting up .ai-office/ directory structure"
 
@@ -40,6 +48,7 @@ for dir in \
   "$AI_OFFICE/tasks/TODO" \
   "$AI_OFFICE/tasks/WIP" \
   "$AI_OFFICE/tasks/REVIEW" \
+  "$AI_OFFICE/tasks/BLOCKED" \
   "$AI_OFFICE/tasks/DONE" \
   "$AI_OFFICE/tasks/ARCHIVED" \
   "$AI_OFFICE/docs/prd" \
@@ -98,6 +107,12 @@ if [[ ! -d "$AI_OFFICE/templates" ]]; then
   echo "→ Document templates installed ($(ls "$AI_OFFICE/templates/"*.md | wc -l | tr -d ' ') files)"
 fi
 
+# addons/ — copy rule addons (skip if already present)
+if [[ ! -d "$AI_OFFICE/addons" ]]; then
+  cp -r "$SKELETON/.ai-office/addons" "$AI_OFFICE/addons"
+  echo "→ Rule addons installed ($(ls "$AI_OFFICE/addons/"*.md | wc -l | tr -d ' ') files)"
+fi
+
 echo "  ✅ .ai-office/ structure ready"
 
 # ── Done ──────────────────────────────────────────────────────────────────────
@@ -115,3 +130,10 @@ else
   echo "  /office:route <describe your task>"
   echo "  /office:doctor"
 fi
+
+echo ""
+echo "Optional addons (activate in .claude/CLAUDE.md):"
+for addon in "$AI_OFFICE/addons/"*.md; do
+  echo "  # @.ai-office/addons/$(basename "$addon")"
+done
+echo "Uncomment the lines you need — each addon adds domain-specific rules."

@@ -1,8 +1,8 @@
 ---
-description: Create a new task on the AI Office kanban board. Usage: /office:task-create <title> [ms:M1] [priority:HIGH|MEDIUM|LOW] [column:BACKLOG|TODO] [assignee:name] [deps:T001,T002] [estimate:4h]
+description: Create a new task on the AI Office kanban board. Usage: /office:task-create <title> [ms:M1] [priority:HIGH|MEDIUM|LOW] [column:BACKLOG|TODO] [assignee:name] [deps:T001,T002] [estimate:4h] [labels:bug,auth]
 ---
 
-$ARGUMENTS format: `<title> [ms:M1] [priority:HIGH|MEDIUM|LOW] [column:BACKLOG|TODO] [assignee:name] [deps:id,...] [estimate:4h]`
+$ARGUMENTS format: `<title> [ms:M1] [priority:HIGH|MEDIUM|LOW] [column:BACKLOG|TODO] [assignee:name] [deps:id,...] [estimate:4h] [labels:tag1,tag2]`
 
 Parse the arguments:
 - **title**: everything before the first keyword flag (required)
@@ -12,11 +12,12 @@ Parse the arguments:
 - **assignee**: agent/person name — default `Unassigned`
 - **deps**: comma-separated task IDs this task depends on (e.g. `M1_T002,M1_T003`) — default `—`
 - **estimate**: time estimate like `2h`, `1d` — default `—`
+- **labels**: comma-separated tags for categorization (e.g. `bug,auth,perf`) — default `—`
 
 Examples:
 - `/office:task-create Fix upload timeout` → M0, MEDIUM, BACKLOG, Unassigned
-- `/office:task-create Add billing page ms:M1 priority:HIGH column:TODO assignee:Developer estimate:4h`
-- `/office:task-create Auth middleware ms:M2 assignee:Security deps:M1_T002-setup-db-developer`
+- `/office:task-create Add billing page ms:M1 priority:HIGH column:TODO assignee:Developer estimate:4h labels:feature,billing`
+- `/office:task-create Auth middleware ms:M2 assignee:Security deps:M1_T002-setup-db-developer labels:bug,auth`
 
 ---
 
@@ -60,6 +61,7 @@ Examples:
 **Status:** <column>
 **Assignee:** <assignee>
 **Dependencies:** <deps or —>
+**Labels:** <labels or —>
 **Created:** <today ISO date>
 **Started:** —
 **Completed:** —
@@ -72,6 +74,10 @@ Examples:
 ## Acceptance Criteria
 
 - [ ]
+
+## History
+
+- <today ISO date>: Created in <column>
 
 ## Time Log
 
@@ -90,3 +96,5 @@ Examples:
    - Write the file back
 
 6. Confirm: "Created `<ms>_T<NNN>`: **<title>** → `<COLUMN>` (`<filename>`)"
+
+<!-- ai-office-version: 1.3.0 -->
