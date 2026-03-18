@@ -19,20 +19,22 @@ Use this matrix as the reference when creating or updating agencies and agents.
 - GitHub Actions (CI checks)
 - Markdown docs + project runbooks
 
-### Proposed MCP Adapter Baseline
+### MCP Adapter Baseline
 
-| Adapter | Purpose |
-|---------|---------|
-| `fetch` | External documentation and market research |
-| `sequential-thinking` | Structured analysis and decision support |
-| `supabase` | Database, auth, storage, and telemetry operations |
-| `mcp-playwright` | Browser automation and E2E validation |
-| `snyk` | Security scanning (SAST/SCA/container/IaC) |
-| `lighthouse` | Performance, accessibility, and SEO audits |
+These are the only adapters referenced by at least one active agency. No other adapters are installed by default.
 
-### Optional Company MCP Portfolio
-
-`stitch`, `runcomfy`, `revenuecat`, `ios-simulator`, `llm-router`, `postgresql`, `app-store-connect`,
+| Adapter | Used by agencies | Purpose |
+|---------|-----------------|---------|
+| `fetch` | All | External documentation and market research |
+| `supabase` | software-studio, lean-startup | Database, auth, storage, and telemetry operations |
+| `mcp-playwright` | software-studio, lean-startup, creative-agency, game-studio, media-agency | Browser automation and E2E validation |
+| `snyk` | software-studio, lean-startup, penetration-test-agency | Security scanning (SAST/SCA/container/IaC) |
+| `lighthouse` | software-studio, lean-startup, creative-agency, media-agency | Performance, accessibility, and SEO audits |
+| `sequential-thinking` | game-studio, software-studio, lean-startup, penetration-test-agency | Structured analysis and decision support |
+| `stitch` | creative-agency, media-agency | AI-powered UI and visual design generation |
+| `runcomfy` | creative-agency, media-agency | AI image and video generation |
+| `ios-simulator` | software-studio, creative-agency, game-studio, penetration-test-agency, media-agency | iOS app and game testing / mobile preview |
+| `postgresql` | software-studio | Direct database access when Supabase abstraction is insufficient |
 
 ## Agency-Level Proposal Matrix
 
