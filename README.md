@@ -14,6 +14,28 @@ A file-based virtual agency system for AI-assisted software development. Orchest
 - 🛡️ **Loop guards**: prevent infinite QA/review/UAT cycles (hard limits with escalation)
 - 📝 **Artifacts**: PRD, ADR, runbooks, task board, status files—all markdown, all version-controlled
 
+### Visual Overview
+
+```mermaid
+graph LR
+    A[👤 User Request] -->|/office:route| B[📋 Discussion Phase]
+    B -->|Create Context| C[📝 PRD Stage]
+    C -->|CEO Approval| D[🏗️ ADR Stage]
+    D -->|Architecture| E[📊 Plan Stage]
+    E -->|Break Tasks| F[🎯 Execution]
+    F -->|Dev+UX+Security| G[🧪 QA Stage]
+    G -->|Verify| H[👁️ Review Stage]
+    H -->|Approve| I[✅ UAT Stage]
+    I -->|Sign-off| J[🚀 Release]
+    J -->|Deploy| K[📖 Postmortem]
+
+    style A fill:#e1f5ff
+    style B fill:#fff3e0
+    style F fill:#f3e5f5
+    style G fill:#e8f5e9
+    style J fill:#c8e6c9
+```
+
 ---
 
 ## 🚀 Quick Start
@@ -71,6 +93,67 @@ The installer creates:
 ---
 
 ## 📋 Commands Reference
+
+### Command Flow Diagram
+
+```mermaid
+graph TD
+    START["🎯 Start"] -->|New Request| ROUTE["/office:route"]
+    ROUTE -->|Classify| STATUS["/office:status"]
+    STATUS -->|Create Artifacts| SCAFFOLD["/office:scaffold"]
+    SCAFFOLD -->|Review| REVIEW["/office:review"]
+    REVIEW -->|Ready?| ADVANCE{"/office:advance"}
+    ADVANCE -->|Quality Check| VALIDATE["/office:validate"]
+    VALIDATE -->|Pass| ADVANCE
+    VALIDATE -->|Fail| TASK["Task Board"]
+
+    TASK -->|Create/Move| CREATE["/office:task-create"]
+    CREATE --> TASKMOVE["/office:task-move"]
+    TASKMOVE -->|Work| DEV["Development"]
+    DEV -->|Tests| RUNTEST["/office:run-tests"]
+    RUNTEST -->|Pass| VERIFY["/office:verify"]
+    VERIFY -->|QA Check| ADVANCE
+
+    ADVANCE -->|All Stages Pass| RELEASE["🚀 Release"]
+
+    style START fill:#e3f2fd
+    style ROUTE fill:#fff3e0
+    style ADVANCE fill:#f3e5f5
+    style RELEASE fill:#c8e6c9
+```
+
+### Which Command Should I Use?
+
+```mermaid
+graph TD
+    START{"What do you<br/>want to do?"}
+
+    START -->|New request| ROUTE["/office:route"]
+    START -->|Check status| STATUS["/office:status"]
+    START -->|Create artifacts| SCAFFOLD["/office:scaffold"]
+    START -->|Move between stages| ADVANCE["/office:advance"]
+    START -->|Work on tasks| TASK{Task action?}
+    START -->|Test & review| QA{Quality check?}
+    START -->|Manage milestones| MILESTONE["/office:milestone"]
+    START -->|See reports| REPORT["/office:report"]
+
+    TASK -->|Create| CREATE["/office:task-create"]
+    TASK -->|Move column| MOVE["/office:task-move"]
+    TASK -->|Update metadata| UPDATE["/office:task-update"]
+    TASK -->|View board| LIST["/office:task-list"]
+
+    QA -->|Run tests| TEST["/office:run-tests"]
+    QA -->|Scan secrets| SECRETS["/office:validate-secrets"]
+    QA -->|Code review| REVIEW["/office:review"]
+    QA -->|QA verify| VERIFY["/office:verify"]
+    QA -->|Check gates| VALIDATE["/office:validate"]
+
+    style START fill:#e3f2fd
+    style ROUTE fill:#fff3e0
+    style ADVANCE fill:#f3e5f5
+    style CREATE fill:#e8f5e9
+    style VERIFY fill:#c8e6c9
+```
 
 ### Core Routing
 
@@ -160,6 +243,57 @@ The installer creates:
 ---
 
 ## 📁 Directory Structure
+
+### Visual Structure
+
+```mermaid
+graph TD
+    ROOT["📦 project-root"]
+    CLAUDE[".claude<br/>(Claude Code)"]
+    AIOFFICE[".ai-office<br/>(Framework Engine)"]
+
+    ROOT --> CLAUDE
+    ROOT --> AIOFFICE
+
+    CLAUDE --> CLAUDEMD["CLAUDE.md<br/>(base rules)"]
+    CLAUDE --> COMMANDS["commands/office/<br/>(23 commands)"]
+
+    AIOFFICE --> CONFIG["📋 Configs"]
+    AIOFFICE --> TASKS["📊 Tasks<br/>(Kanban Board)"]
+    AIOFFICE --> DOCS["📝 Docs<br/>(Artifacts)"]
+    AIOFFICE --> AGENTS["👥 Agents<br/>(22 profiles)"]
+    AIOFFICE --> AGENCIES["🏛️ Agencies<br/>(6 templates)"]
+    AIOFFICE --> ADDONS["🔌 Addons<br/>(opt-in rules)"]
+
+    CONFIG --> PROJECTCFG["project.config.md"]
+    CONFIG --> AGENCYJSON["agency.json"]
+    CONFIG --> MILESTONES["milestones/"]
+
+    TASKS --> BACKLOG["BACKLOG/"]
+    TASKS --> TODO["TODO/"]
+    TASKS --> WIP["WIP/"]
+    TASKS --> REVIEW["REVIEW/"]
+    TASKS --> BLOCKED["BLOCKED/"]
+    TASKS --> DONE["DONE/"]
+    TASKS --> ARCHIVED["ARCHIVED/"]
+
+    DOCS --> CONTEXT["context/"]
+    DOCS --> PRD["prd/"]
+    DOCS --> ADR["adr/"]
+    DOCS --> RUNBOOKS["runbooks/"]
+
+    ADDONS --> SUPABASE["supabase.md"]
+    ADDONS --> REACT["frontend-react.md"]
+    ADDONS --> BUN["bun-monorepo.md"]
+
+    style ROOT fill:#e3f2fd
+    style CLAUDE fill:#fff3e0
+    style AIOFFICE fill:#f3e5f5
+    style TASKS fill:#e8f5e9
+    style DOCS fill:#ede7f6
+```
+
+### Detailed Structure
 
 After install, your project has:
 
@@ -265,14 +399,35 @@ Example: `M1_T003-fix-upload-timeout-developer.md`
 
 ### Task Lifecycle
 
+```mermaid
+stateDiagram-v2
+    [*] --> BACKLOG: /office:task-create
+
+    BACKLOG --> TODO: /office:task-move
+    TODO --> WIP: /office:task-move
+
+    WIP --> REVIEW: /office:task-move<br/>acceptance criteria met
+
+    REVIEW --> DONE: /office:task-move<br/>/office:verify ✅
+    REVIEW --> WIP: /office:task-move<br/>feedback: fix and retry
+
+    DONE --> ARCHIVED: /office:milestone archive
+
+    WIP --> BLOCKED: /office:task-move<br/>reason: dependency, bug, etc
+    REVIEW --> BLOCKED: blocker discovered
+    BLOCKED --> WIP: unblock criteria met
+
+    ARCHIVED --> [*]
+    DONE --> [*]
 ```
-Create           Move         Move         Move              Move
-  ↓              ↓            ↓            ↓                 ↓
+
+**Legacy ASCII view:**
+```
 BACKLOG  →  TODO  →  WIP  →  REVIEW  →  DONE  →  ARCHIVED
-           ↑                   ↑
-           └─ Return to TODO ──┘  (feedback from review)
-                                   ↑
-                              BLOCKED ← (blocker found)
+           ↑                   ↑          ↑
+           └─ Rework ──────────┘          │
+                                          │
+                              BLOCKED ←──┴─ (blocker found)
 ```
 
 ### Creating Tasks with Slug
@@ -296,42 +451,91 @@ BACKLOG  →  TODO  →  WIP  →  REVIEW  →  DONE  →  ARCHIVED
 
 ### Standard Pipeline (Software Studio)
 
+```mermaid
+graph LR
+    ROUTER["🔀 router<br/>Request classifier"]
+    PRD["📋 prd<br/>PM creates requirements"]
+    ADR["🏗️ adr<br/>Architect decides"]
+    PLAN["📊 plan<br/>Planner breaks down"]
+    TASKS["🎯 tasks<br/>Task files created"]
+
+    UX["🎨 ux_research<br/>User research"]
+    DESIGN["🖼️ design_ui<br/>UI design"]
+
+    DEV["👨‍💻 dev<br/>Implementation"]
+    SEC["🔒 security<br/>Security review"]
+    QA["🧪 qa<br/>QA testing"]
+
+    REVIEW["👁️ review<br/>Code review"]
+    UAT["✅ user_acceptance<br/>UAT sign-off"]
+    RELEASE["🚀 release<br/>Deploy"]
+    POST["📖 postmortem<br/>Learnings"]
+
+    ROUTER --> PRD
+    PRD --> ADR
+    ADR --> PLAN
+    PLAN --> TASKS
+
+    TASKS --> UX
+    TASKS --> DEV
+    UX --> DESIGN
+    DESIGN --> DEV
+
+    DEV --> SEC
+    DEV --> QA
+    SEC --> REVIEW
+    QA --> REVIEW
+
+    REVIEW --> UAT
+    UAT --> RELEASE
+    RELEASE --> POST
+
+    style ROUTER fill:#e3f2fd
+    style DEV fill:#f3e5f5
+    style REVIEW fill:#e8f5e9
+    style RELEASE fill:#c8e6c9
 ```
-router
-  ↓
-prd (PM creates requirements)
-  ↓
-adr (Architect decides on design)
-  ↓
-plan (Planner breaks down work)
-  ↓
-tasks (Planner creates task files)
-  ├→ ux_research (parallel)
-  │  ↓
-  │  design_ui
-  │  ↓
-  ↓  ↓
-dev (Developer implements)
-  ├→ security (Security review in parallel)
-  ├→ qa (QA testing in parallel)
-  ↓ ↓ ↓
-review (Reviewer merges)
-  ↓
-user_acceptance (PM conducts UAT)
-  ↓
-release (Release Manager deploys)
-  ↓
-postmortem (Ops captures learnings)
+
+**Legacy ASCII view:**
+```
+router → prd → adr → plan → tasks ──┬→ ux_research → design_ui ─┐
+                                    │                           ↓
+                                    └→ dev ←─────────────────────┘
+                                     ├→ security
+                                     └→ qa
+                                      ↓ ↓ ↓
+                                      review → user_acceptance → release → postmortem
 ```
 
-### Stage Transitions
+### Stage Transitions via /office:advance
 
-Each transition via `/office:advance`:
+```mermaid
+sequenceDiagram
+    participant User
+    participant Advance as /office:advance
+    participant StatusFile as status.md
+    participant TaskBoard as task board
+    participant Review as Review Log
 
-1. ✅ Checks **loop guards** (max iterations before escalation)
-2. 📋 Reassigns all matching tasks to the next stage's agent
-3. 📊 Updates status file with review log entry
-4. 🔒 In `manual` mode: pauses for confirmation
+    User->>Advance: /office:advance payment-gateway qa<br/>"tests pass, 87% coverage"
+
+    Advance->>StatusFile: Read .ai-office/docs/runbooks/<br/>payment-gateway-status.md
+    alt Status file not found
+        Advance-->>User: ❌ Stop: scaffold status first
+    else Status exists
+        Advance->>StatusFile: Check Loop Guards<br/>(qa_iteration counter)
+        alt Limit reached
+            Advance->>StatusFile: Set State: blocked<br/>Owner: planner
+            Advance-->>User: ⚠️ Limit hit, escalated
+        else Limit OK
+            Advance->>TaskBoard: Find all tasks with<br/>**Slug: payment-gateway**
+            Advance->>TaskBoard: Reassign to QA agent
+            TaskBoard-->>Advance: N tasks updated
+            Advance->>Review: Add row: date | qa | qa stage | "tests pass, 87%"
+            Advance-->>User: ✅ Advanced: dev → qa<br/>N tasks reassigned
+        end
+    end
+```
 
 **Example:**
 
@@ -340,16 +544,49 @@ Each transition via `/office:advance`:
 ```
 
 This:
-- Validates the status file exists (or stops with helpful message)
-- Checks loop guards (qa_iteration counter)
-- Moves to QA stage
-- Finds all tasks with `**Slug:** payment-gateway`
-- Reassigns them to the QA agent
-- Adds evidence to the Review Log
+1. ✅ Validates status file exists (or stops with helpful message)
+2. 🛡️ Checks loop guards (qa_iteration counter)
+3. 🔀 Moves to QA stage
+4. 🎯 Finds all tasks with `**Slug: payment-gateway**`
+5. 👤 Reassigns them to the QA agent
+6. 📊 Adds evidence to the Review Log
+7. 🔒 In `manual` mode: pauses for confirmation before commit
 
 ---
 
 ## 🎯 Milestone Workflow
+
+### Milestone Lifecycle
+
+```mermaid
+graph LR
+    CREATE["/office:milestone<br/>create M1"]
+    SUGGEST["System suggests<br/>8-12 tasks"]
+    PROMPT{"advance_mode<br/>manual?"}
+
+    CREATE --> SUGGEST
+    SUGGEST --> PROMPT
+
+    PROMPT -->|yes| AUTO["Auto-create all"]
+    PROMPT -->|no| MENU["Show menu:<br/>all | select<br/>edit | none"]
+
+    AUTO --> TASKS["Tasks created<br/>in BACKLOG"]
+    MENU --> TASKS
+
+    TASKS --> TRACK["/office:task-list<br/>Work progresses"]
+    TRACK --> STATUS["/office:milestone<br/>status M1"]
+
+    STATUS --> PROGRESS["75% complete<br/>6/8 tasks done"]
+    PROGRESS --> CLOSE["/office:milestone<br/>close M1"]
+
+    CLOSE --> ARCHIVE["/office:milestone<br/>archive M1"]
+    ARCHIVE --> HIST["Milestone archived<br/>tasks moved to ARCHIVED"]
+
+    style CREATE fill:#fff3e0
+    style TASKS fill:#f3e5f5
+    style PROGRESS fill:#c8e6c9
+    style HIST fill:#eceff1
+```
 
 ### Create and Generate Tasks
 
@@ -444,6 +681,29 @@ Loop guards prevent infinite dev↔QA↔review cycles. Each status file tracks:
 | uat_iteration | 0 | 1 |
 ```
 
+### How Loop Guards Work
+
+```mermaid
+graph TD
+    A["`/office:advance qa → dev`"] --> B{"qa_iteration<br/>limit reached?"}
+    B -->|No| C["Increment counter"]
+    C --> D["Advance to dev"]
+    D --> E["✅ Continue work"]
+
+    B -->|Yes| F["Set State: blocked"]
+    F --> G["Owner → Planner"]
+    G --> H["Add unblock criteria"]
+    H --> I["🛑 BLOCKED<br/>Needs Planner review"]
+    I --> J["Planner schedules<br/>root cause analysis"]
+    J --> K["Fix blocker"]
+    K --> L["/office:status payment-gateway dev"]
+    L --> E
+
+    style A fill:#fff3e0
+    style I fill:#ffebee
+    style E fill:#c8e6c9
+```
+
 **Behavior:**
 
 | Transition | Limit | Escalation |
@@ -452,19 +712,23 @@ Loop guards prevent infinite dev↔QA↔review cycles. Each status file tracks:
 | Review → dev (revision) | 2 | Set to `blocked`, owner → Planner |
 | UAT → dev (user acceptance) | 1 | Set to `blocked`, owner → Planner |
 
-When a task hits the limit:
+### Example: Loop Guard Triggers
 
 ```
-❌ Advancing: payment-gateway
-qa → dev
-Evidence: test failures in checkout flow
+Iteration 1: qa → dev → qa (fix tests) → qa → dev → qa (fix again)
+Iteration 2: qa → dev (final fix attempt)
+Iteration 3: ❌ qa_iteration limit (2) reached!
 
-⚠️  qa_iteration limit (2) reached. Task set to BLOCKED.
+⚠️  Task set to BLOCKED
 Reassigned to: Planner
-Unblock criteria: Fix root cause of checkout test failures; schedule review meeting to prevent regression
+Unblock criteria: Root cause analysis meeting required before dev resumes
+
+→ Planner investigates root cause
+→ Team decides: architecture issue, not just test flake
+→ /office:status payment-gateway blocked → adr (escalate to Architect)
 ```
 
-The Planner must explicitly unblock by setting `State: blocked → <stage>` or `/office:status payment-gateway <stage>`.
+The owner (Planner) must explicitly unblock by setting a new stage or unblock criteria.
 
 ---
 
@@ -605,6 +869,38 @@ Updates are **smart**: only changed files are updated (per-file version diffing)
 ---
 
 ## 📊 Typical Workflow
+
+### Feature Request → Production (Timeline)
+
+```mermaid
+gantt
+    title Feature: Real-time Notifications (M1)
+    dateFormat YYYY-MM-DD
+
+    section Discovery
+    Route & Discuss           :route, 2026-03-20, 1d
+    Create PRD                :prd, 2026-03-21, 2d
+
+    section Design
+    Architecture (ADR)        :adr, 2026-03-23, 1d
+    Planning & Tasks          :plan, 2026-03-24, 2d
+
+    section Development
+    Implementation            :dev, 2026-03-26, 5d
+    Security Review           :sec, 2026-03-26, 5d
+    Unit Tests                :test, 2026-03-26, 5d
+
+    section Quality
+    QA Verification           :qa, 2026-03-31, 2d
+    Code Review               :review, 2026-04-02, 2d
+    UAT Sign-off              :uat, 2026-04-04, 1d
+
+    section Release
+    Production Deploy         :release, 2026-04-05, 1d
+    Postmortem                :post, 2026-04-06, 1d
+
+    milestone Shipping to prod, 2026-04-05, 0d
+```
 
 ### Day 1: New Feature Request
 
