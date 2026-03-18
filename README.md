@@ -744,6 +744,7 @@ Six pre-built agencies for different team structures and project types:
 | **creative-agency** | Media & content production | Audio/video/image creators | Asset production, creative review cycle |
 | **media-agency** | Film & video production | Video creator focus | Pre-production → production → post |
 | **penetration-test-agency** | Security testing | Security specialist lead | Pentest workflow, audit reports |
+| **italian-legal-studio** | Italian law firms | 6 (custom roles) | Document drafting, compliance review, partner approval, Italian law standards |
 
 ### Create Custom Agency
 
@@ -752,6 +753,45 @@ Six pre-built agencies for different team structures and project types:
 
 # New agency appears in /office:setup menu automatically (dynamic discovery)
 ```
+
+### Italian Legal Studio — Example Agency
+
+```mermaid
+graph LR
+    CLIENT["👤 Client<br/>Brief"]
+    INTAKE["📋 Intake<br/>Case facts"]
+    RESEARCH["📚 Research<br/>Statute + precedent"]
+    COMPLIANCE["✅ Compliance<br/>Code verification"]
+    DRAFT["✍️ Draft<br/>Document creation"]
+    REVIEW["👁️ Review<br/>Grammar + citations"]
+    PARTNER["⚖️ Partner<br/>Approval + signature"]
+    DELIVER["📤 Delivery<br/>File + send"]
+
+    CLIENT -->|/office:route| INTAKE
+    INTAKE -->|Associate Attorney| RESEARCH
+    RESEARCH -->|Compliance Officer| COMPLIANCE
+    COMPLIANCE -->|Associate Attorney| DRAFT
+    DRAFT -->|Reviewer| REVIEW
+    REVIEW -->|Senior Partner| PARTNER
+    PARTNER -->|Practice Manager| DELIVER
+
+    style CLIENT fill:#e3f2fd
+    style RESEARCH fill:#fff3e0
+    style DRAFT fill:#f3e5f5
+    style PARTNER fill:#ffebee
+    style DELIVER fill:#c8e6c9
+
+    classDef italian fill:#fffacd
+    class COMPLIANCE,PARTNER,DELIVER italian
+```
+
+**Specialized Roles:**
+- **Senior Partner** — Strategic decisions, document signature authority
+- **Associate Attorney** — Research, drafting, client consultation
+- **Compliance Officer** — Legal compliance, regulatory verification (NEW)
+- **Reviewer** — Italian grammar, citation accuracy, formatting
+- **Paralegal** — Document assembly, filing preparation
+- **Practice Manager** — Calendar, billing, deadlines
 
 ---
 
