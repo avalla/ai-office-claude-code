@@ -1,5 +1,5 @@
 ---
-description: Interactive project setup wizard — configure agency, tech stack, and quality thresholds. Usage: /office:setup
+description: Interactive project setup wizard — configure agency profile, tech stack, and quality thresholds. Usage: /office:setup
 ---
 
 You are running the AI Office project setup wizard.
@@ -18,58 +18,98 @@ Read `.ai-office/project.config.md`.
 Ask the following questions one at a time. Wait for each answer before asking the next.
 
 ### 1. Project name
-"What is your project name? (used in reports and status files)"
+"What is your project name?"
 
-### 2. Agency type
-"Select an agency type:
+### 2. Domain
+"What kind of project is this?
 
-1. **software-studio** — Full-stack web/mobile, complete SDLC
-2. **lean-startup** — Rapid MVP, minimal process
-3. **game-studio** — Game development
-4. **creative-agency** — Media & content production
-5. **media-agency** — Video and movie production
-6. **penetration-test-agency** — Security testing and audits
+1. Web app (frontend + backend, SaaS, dashboards)
+2. Mobile app (iOS / Android / React Native)
+3. API / backend service (no UI)
+4. Data pipeline / analytics
+5. CLI tool / developer tooling
+6. Game
+7. Content / media production
+8. Other — describe it"
 
-You can also describe your project and I'll recommend one."
+### 3. Team composition
+"Who is working on this project?
 
-Read their answer. If they describe a project instead of choosing a number, suggest the best fit and confirm.
+1. Just me + AI (solo)
+2. Small team (2–5 people) + AI
+3. Larger team — AI assists specific roles"
 
-### 3. Tech stack
-"What commands does your project use? (press Enter to keep the suggested default)
+### 4. Quality concerns
+"What are the critical quality concerns? (pick all that apply, e.g. '1 3')
 
-- Typecheck: (suggest based on agency — `npm run typecheck` for web projects, `mypy src` for Python, `go vet ./...` for Go)
+1. Security-sensitive (auth, payments, PII, compliance)
+2. Performance-critical (latency, throughput, scale)
+3. High test coverage required
+4. Strong UX / accessibility standards
+5. Compliance or audit trail required (SOC2, HIPAA, GDPR)
+6. None in particular — standard quality"
+
+### 5. Tech stack
+"What commands does your project use? (press Enter to accept the suggestion)
+
+- Typecheck: (suggest based on domain — `npm run typecheck` for web/mobile, `mypy src` for Python, `go vet ./...` for Go)
 - Lint: (suggest `npm run lint`, `ruff check .`, or `golangci-lint run`)
-- Test: (suggest `npm run test`, `pytest`, or `go test ./...`)
-- Test runner name: (vitest / jest / pytest / go test)"
+- Test: (suggest `npm run test`, `pytest`, or `go test ./...`)"
 
-### 4. Design system (skip if no UI framework)
-"What UI framework and design system does your project use?
-Examples: React + shadcn/ui, Vue + Vuetify, React Native + NativeBase, or 'none' to skip"
+### 6. UI framework (skip if domain is API / data pipeline / CLI)
+"What UI framework and design system are you using?
+Examples: React + shadcn/ui, Vue + Vuetify, React Native + NativeBase, or 'none'"
 
-### 5. Quality thresholds
-"Quality gate thresholds (press Enter for defaults):
-- Minimum test coverage: [80]%
-- Minimum Lighthouse score: [90] (set to 0 to skip)"
+### 7. Release cadence
+"How do you ship?
 
-### 6. Advance mode
+1. Continuous deploy (merge to main = ship)
+2. Sprint-based (weekly or biweekly releases)
+3. Milestone releases (explicit version tags)"
+
+### 8. Advance mode
 "How should the pipeline advance between stages?
 
-1. **manual** — pause and ask for confirmation before each stage transition (default, recommended)
-2. **auto** — validate and advance automatically without prompting
+1. **manual** — pause and ask before each stage transition (default, recommended)
+2. **auto** — validate and advance automatically"
 
-In both modes you can always override by running `/office:advance <slug>` manually."
+---
 
-Read their answer (1 or 2, or the word). Default: `manual`.
+## Agency Profiling
+
+Based on answers to steps 2–4 and 7, derive the agency profile. Do not ask more questions — generate it from what you know.
+
+**Agent selection rules:**
+
+| Condition | Include agent |
+|-----------|--------------|
+| Always | `developer`, `qa` |
+| Domain = web app or mobile | `designer` |
+| Domain = web app or mobile, team > solo | `pm` |
+| Quality concern = security, compliance | `security-specialist` |
+| Quality concern = performance | `reviewer` (performance focus) |
+| Team > solo OR milestone releases | `architect` |
+| Continuous deploy OR compliance | `ops` |
+
+**Per-agent focus** — tailor the description to the project's actual stack and concerns, not generic text. Examples:
+- developer: "Next.js + Supabase, focus on RLS and edge functions"
+- qa: "Vitest unit tests + Playwright E2E, auth flows are highest priority"
+- security-specialist: "Stripe webhook validation, Supabase RLS policies, session handling"
+
+**Handoff rules** — derive from cadence:
+- Continuous deploy → `dev → qa → review → release` on every PR
+- Sprint → `dev → qa → review` mid-sprint, `release` at sprint end
+- Milestone → full pipeline per milestone, explicit release gate
 
 ---
 
 ## Write the config
 
-After collecting all answers, write `.ai-office/project.config.md` with this format:
+After collecting all answers, write `.ai-office/project.config.md`:
 
 ```markdown
 ---
-agency: <selected>
+agency: <project-slug>
 project_name: <name>
 
 typecheck_cmd: "<cmd>"
@@ -83,14 +123,14 @@ design_system: "<system or "">"
 coverage_min: <N>
 lighthouse_min: <N>
 
-# Pipeline behaviour — manual | auto
 advance_mode: <advance_mode>
+release_cadence: <continuous|sprint|milestone>
 ---
 
 # Project Configuration
 
 **Project:** <name>
-**Agency:** <selected>
+**Agency:** <project-slug> (custom)
 **Created:** <today ISO>
 
 ## Notes
@@ -98,12 +138,39 @@ advance_mode: <advance_mode>
 > Add project-specific context here.
 ```
 
-Also write `.ai-office/agency.json`:
+Write `.ai-office/agencies/<project-slug>/config.md`:
+
+```markdown
+# Agency: <project-slug>
+
+**Project:** <name>
+**Domain:** <domain>
+**Generated:** <today ISO>
+
+## Active Agents
+
+| Agent | Role | Focus for this project |
+|-------|------|------------------------|
+| developer | Implementation | <tailored focus> |
+| qa | Quality assurance | <tailored focus> |
+<... other agents ...>
+
+## Handoff Rules
+
+<derived from release cadence>
+
+## Quality Gates
+
+- Test coverage: ≥ <N>%
+<... other gates from quality concerns ...>
+```
+
+Write `.ai-office/agency.json`:
 ```json
 {
-  "name": "<agency>",
+  "name": "<project-slug>",
   "selectedAt": "<ISO timestamp>",
-  "custom": false
+  "custom": true
 }
 ```
 
@@ -118,7 +185,7 @@ Current configuration (.ai-office/project.config.md)
 
 Field             Current value
 ───────────────── ─────────────────────────
-agency            software-studio
+agency            my-project (custom)
 project_name      My Project
 typecheck_cmd     npm run typecheck
 lint_cmd          npm run lint
@@ -127,16 +194,22 @@ design_system     shadcn/ui
 coverage_min      80
 lighthouse_min    90
 advance_mode      manual
+release_cadence   sprint
 ```
 
-Ask: "What would you like to change? (list field names, or 'all' to redo everything, or 'cancel')"
+Ask: "What would you like to change? (list field names, or 'agency' to re-run profiling, or 'all' to redo everything, or 'cancel')"
 
-Accept a list of field names (e.g. "test_cmd, design_system") and ask only for those values. Keep all others unchanged. Then update the frontmatter in-place.
+If the user says `agency`: re-run the agency profiling questions (steps 2–4, 7) and regenerate `.ai-office/agencies/<project-slug>/config.md`.
+
+Otherwise accept a list of field names and ask only for those values. Keep all others unchanged. Then update the frontmatter in-place.
 
 ---
 
 ## After writing
 
 1. Confirm: "✅ Configuration saved — `.ai-office/project.config.md`"
-2. Run the equivalent of `/office:doctor` inline and show the result
-3. Suggest: "Run `/office:route <describe your next task>` to get started"
+2. Show the generated agency roster as a table
+3. Run the equivalent of `/office:doctor` inline and show the result
+4. Suggest: "Run `/office:route <describe your next task>` to get started"
+
+<!-- ai-office-version: 1.3.0 -->

@@ -1,39 +1,119 @@
 ---
-description: Route a request to the correct AI Office pipeline stage and suggest next action
+description: Route a request to the correct AI Office pipeline and run a discussion phase to capture constraints before planning. Usage: /office:route <request>
 ---
-
-Analyze the following request and route it to the correct pipeline stage.
 
 **Request:** $ARGUMENTS
 
-## Routing Logic
+---
 
-Apply these rules (first match wins):
+## Pre-check — Agency configured?
+
+Before routing, check if `.ai-office/project.config.md` exists and has a non-empty `agency` field.
+
+If not configured, stop and output:
+```
+⚠️  No agency configured for this project.
+
+Run /office:setup to profile your project and generate a custom agency.
+This takes ~2 minutes and ensures the right agents are assigned to your work.
+```
+
+---
+
+## Phase 1 — Classify
+
+Silently determine the request type (do not output this step):
 
 | Request type | Pipeline path |
 |---|---|
-| New feature / new capability | `router → prd → adr → plan → tasks → dev → qa → review → release` |
-| Bug fix | `router → dev → qa → review` |
-| Refactor / cleanup | `router → plan → tasks → dev → qa → review` |
-| Security issue | `router → security → dev → qa → review` |
-| UX / design work | `router → ux_research → design_ui → dev → qa → review` |
-| Quick fix (< 1h, no design) | `router → dev` |
-| Import / onboard project | `router → create_project → prd → adr → plan → tasks` |
-| New full project | `router → create_project → prd → adr → plan → tasks → dev` |
+| New feature / new capability | `discuss → prd → adr → plan → tasks → dev → qa → verify → review → release` |
+| Bug fix | `discuss → dev → qa → verify → review` |
+| Refactor / cleanup | `discuss → plan → tasks → dev → qa → verify → review` |
+| Security issue | `discuss → security → dev → qa → verify → review` |
+| UX / design work | `discuss → ux_research → design_ui → dev → qa → verify → review` |
+| Quick fix (< 1h, no design) | `dev` |
+| Import / onboard project | `discuss → create_project → prd → adr → plan → tasks` |
+| New full project | `discuss → create_project → prd → adr → plan → tasks → dev` |
 
-## Output
+Also derive:
+- **type**: one of the row labels above
+- **slug**: kebab-case identifier (e.g. `user-profile-edit`)
 
-Respond with:
+---
 
-1. **Type detected:** (new feature / bug fix / refactor / etc.)
-2. **Suggested slug:** kebab-case identifier for this work (e.g. `user-profile-edit`)
-3. **Pipeline path:** full stage chain
-4. **Starting stage:** first active stage
-5. **Next action:** exact command to run next
+## Phase 2 — Discussion
 
-Example next actions:
-- `Run /office:scaffold <slug> prd` — to scaffold a PRD
-- `Run /office:task-create <title>` — to create a task directly
-- `Run /office:status <slug>` — to check existing status
+> Skip this phase entirely for **Quick fix** requests. Jump to Phase 3.
 
-Keep the response concise and actionable.
+Ask the following questions in a single message. Tailor which questions appear based on the request type — omit irrelevant ones, add type-specific ones from the table below. Keep the total to 4–6 questions max.
+
+**Universal questions (always ask):**
+1. Are there any constraints I should know upfront? (deadline, performance, backward compatibility, scope limits)
+2. Are there existing patterns in the codebase this should follow or deliberately break from?
+3. Any approaches already ruled out — and why?
+
+**Type-specific additions:**
+
+| Type | Extra questions |
+|------|----------------|
+| New feature | What does success look like for the end user? Any related features or APIs this touches? |
+| Bug fix | How is it manifesting? (error message, repro steps) Is it in production now? Any recent changes that may have caused it? |
+| Refactor | What's the driver — performance, readability, test coverage? What's explicitly out of scope? |
+| Security issue | Has this been exploited or is it theoretical? What data/endpoints are at risk? |
+| UX / design | Who is the target user? Do mockups exist, or starting from scratch? |
+| New project | What's the primary tech stack? Any existing code to onboard, or greenfield? |
+
+**Wait for the user's answers before continuing.**
+
+Once answered, write `.ai-office/docs/context/<slug>.md`:
+
+```markdown
+# Context: <slug>
+
+**Request:** <original request>
+**Date:** <today ISO>
+**Type:** <request type>
+
+## Constraints
+
+<user's answer about constraints, or "None stated">
+
+## Existing Patterns
+
+<user's answer, or "None stated">
+
+## Ruled Out
+
+<user's answer, or "None stated">
+
+## Additional Context
+
+<any type-specific answers>
+```
+
+---
+
+## Phase 3 — Route
+
+Read `.ai-office/agencies/<agency>/config.md` and use the active agent roster when suggesting assignees.
+
+Output:
+
+```
+Type:     <request type>
+Slug:     <slug>
+Pipeline: <full stage chain>
+Context:  .ai-office/docs/context/<slug>.md ✅
+
+Agents: <list active agents relevant to this pipeline>
+
+Next: <exact command>
+```
+
+**Next command** by type:
+- New feature / project: `Run /office:scaffold <slug> prd`
+- Bug fix / security: `Run /office:task-create <title> ms:M0 labels:<type>`
+- Refactor: `Run /office:scaffold <slug> plan`
+- Quick fix: `Run /office:task-create <title> ms:M0 priority:HIGH`
+
+<!-- ai-office-version: 1.3.0 -->
