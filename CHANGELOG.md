@@ -1,3 +1,38 @@
+## 1.3.0 — 2026-03-18
+
+### Added
+
+**Labels support:**
+- `/office:task-create` — new `labels:tag1,tag2` argument; `**Labels:**` field added to task file template
+- `/office:task-update` — new command to update task metadata (labels, priority, assignee, estimate, deps) without moving the task
+
+**Task history:**
+- Task files now include a `## History` section; `/office:task-create` writes the initial `Created in <column>` entry
+- `/office:task-move` appends a timestamped `<OLD> → <NEW>` entry to `## History` on every move
+- `/office:task-update` appends a `Updated — <changed fields>` entry to `## History`
+- `/office:verify` appends verdict and outcome to `## History`
+
+**Discussion phase (GSD-inspired):**
+- `/office:route` now runs a two-phase flow: (1) classify the request, (2) ask 4–6 tailored questions before routing and write `.ai-office/docs/context/<slug>.md` with constraints, patterns, and ruled-out approaches; Quick fix requests skip the discussion phase
+
+**Active QA verification:**
+- `/office:verify <task-id>` — new command that actively verifies acceptance criteria using auto (tests, typecheck, lint, grep), inspect (code reading), and manual methods; diagnoses root causes of failures; renders an APPROVED or RETURNED verdict; updates the task's `## History`
+
+**Custom agency profiling:**
+- `/office:setup` — step 2 replaced: instead of picking from a premade list, Claude interviews you (domain, team, quality concerns, cadence) and generates a custom `.ai-office/agencies/<slug>/config.md` with tailored agent roster, per-agent focus, and handoff rules
+- `/office:route` — new pre-check warns if no agency is configured and blocks routing until `/office:setup` is run
+- `/office:agency` — simplified to three subcommands: `list` (active roster), `get <name>` (raw config), `profile` (re-run interview independently)
+
+**File version annotations:**
+- Modified skeleton command files now include `<!-- ai-office-version: 1.3.0 -->` at the end; `update.sh` uses these annotations to detect per-file staleness
+
+### Changed
+
+- `milestone.md` — `status` command now shows priority breakdown (HIGH/MEDIUM/LOW done counts) and lists all labels in use across the milestone's tasks
+- `install.sh` — prints available addons with activation instructions at the end of install
+- `update.sh` — compares `ai-office-version` annotations per file; falls back to full diff for unannotated files
+- `doctor.md` — command count updated to 23; added agency profile check; added `docs/context/` directory check
+
 # Changelog
 
 ## 1.2.1 — 2026-03-18

@@ -17,8 +17,9 @@ Audit the AI Office framework setup in this project. Check each item and report 
 - [ ] `.ai-office/docs/runbooks/` exists
 - [ ] `.ai-office/docs/prd/` exists
 - [ ] `.ai-office/docs/adr/` exists
+- [ ] `.ai-office/docs/context/` exists — WARN if missing (created on first `/office:route`)
 - [ ] `.ai-office/agents/` exists and is non-empty (at least one agent folder with `personality.md`)
-- [ ] `.ai-office/agencies/` exists
+- [ ] `.ai-office/agencies/` exists and has at least one subdirectory with `config.md`
 - [ ] `.ai-office/milestones/` exists
 - [ ] `.ai-office/templates/` exists — WARN if missing
 - [ ] `.ai-office/memory/` exists
@@ -33,10 +34,11 @@ Audit the AI Office framework setup in this project. Check each item and report 
 - [ ] `.ai-office/project.config.md` exists — WARN if missing (run `/office:setup`)
 - [ ] If it exists: YAML frontmatter has `agency`, `project_name`, `typecheck_cmd`, `lint_cmd`, `test_cmd`, `advance_mode` — WARN for each missing field
 - [ ] `.ai-office/agency.json` exists and `name` field matches `agency` in `project.config.md`
+- [ ] `.ai-office/agencies/<agency>/config.md` exists and has `## Active Agents` section — WARN if missing (run `/office:agency profile`)
 
 ### Claude Code Integration
 - [ ] `.claude/commands/office/` directory exists
-- [ ] All 21 commands present: `_meta.md`, `advance.md`, `agency.md`, `ai-office.md`, `doctor.md`, `graph.md`, `milestone.md`, `report.md`, `review.md`, `role.md`, `route.md`, `run-tests.md`, `scaffold.md`, `script.md`, `setup.md`, `status.md`, `task-create.md`, `task-list.md`, `task-move.md`, `validate.md`, `validate-secrets.md`
+- [ ] All 23 commands present: `_meta.md`, `advance.md`, `agency.md`, `ai-office.md`, `doctor.md`, `graph.md`, `milestone.md`, `report.md`, `review.md`, `role.md`, `route.md`, `run-tests.md`, `scaffold.md`, `script.md`, `setup.md`, `status.md`, `task-create.md`, `task-list.md`, `task-move.md`, `task-update.md`, `validate.md`, `validate-secrets.md`, `verify.md`
 - [ ] `.claude/commands/office/.version` exists (version stamp)
 
 ### Task Board Integrity
@@ -53,10 +55,9 @@ Audit the AI Office framework setup in this project. Check each item and report 
 - [ ] Each agent folder has `personality.md` — FAIL for any missing
 - [ ] Each agent folder has `competencies.md`, `triggers.md`, `workflows.md` — WARN for any missing
 
-### Agency Templates
+### Agency Profile
 - [ ] At least one agency directory present in `.ai-office/agencies/`
-- [ ] Each agency dir has `config.md` and `pipeline.md`
-- [ ] Each agency dir has `templates.md` — WARN if missing
+- [ ] Active agency dir has `config.md` with `## Active Agents` table — WARN if missing
 - [ ] `.ai-office/software-mcp-proposals.md` exists — WARN if missing
 
 ---
@@ -66,17 +67,19 @@ Audit the AI Office framework setup in this project. Check each item and report 
 ```
 AI Office Doctor — <today>
 
-✅ Directory structure: 15/15 checks passed
+✅ Directory structure: 16/16 checks passed
 ✅ Config files: 2/2
-✅ Project configuration: project.config.md present, all required fields set (software-studio, advance_mode: manual)
-✅ Claude Code integration: 21/21 commands, version 1.2.0
+✅ Project configuration: project.config.md present, all required fields set (my-project, advance_mode: manual)
+✅ Agency profile: my-project — developer, qa, security-specialist, ops (custom)
+✅ Claude Code integration: 23/23 commands, version 1.3.0
 ✅ Task board integrity: counts match, filename convention followed
 ✅ Milestones: M1 (active), M2 (active)
 ✅ Agent profiles: 21 agents, all personality.md present
-✅ Agency templates: 6 agencies found, all with templates.md
 
 Overall: HEALTHY / DEGRADED / BROKEN
 
 Issues to fix:
 - <list any WARN or FAIL items with suggested fix>
 ```
+
+<!-- ai-office-version: 1.3.0 -->
