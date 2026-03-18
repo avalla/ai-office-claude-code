@@ -65,9 +65,9 @@ echo "→ Checking .ai-office/ structure..."
 AI_OFFICE="$PROJECT_ROOT/.ai-office"
 for dir in \
   "$AI_OFFICE/tasks/BACKLOG" "$AI_OFFICE/tasks/TODO" "$AI_OFFICE/tasks/WIP" \
-  "$AI_OFFICE/tasks/REVIEW" "$AI_OFFICE/tasks/DONE" \
+  "$AI_OFFICE/tasks/REVIEW" "$AI_OFFICE/tasks/DONE" "$AI_OFFICE/tasks/ARCHIVED" \
   "$AI_OFFICE/docs/prd" "$AI_OFFICE/docs/adr" "$AI_OFFICE/docs/runbooks" \
-  "$AI_OFFICE/scripts"
+  "$AI_OFFICE/milestones" "$AI_OFFICE/scripts" "$AI_OFFICE/memory"
 do
   mkdir -p "$dir"
 done

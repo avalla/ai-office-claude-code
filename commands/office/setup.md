@@ -50,6 +50,16 @@ Examples: React + shadcn/ui, Vue + Vuetify, React Native + NativeBase, or 'none'
 - Minimum test coverage: [80]%
 - Minimum Lighthouse score: [90] (set to 0 to skip)"
 
+### 6. Advance mode
+"How should the pipeline advance between stages?
+
+1. **manual** — pause and ask for confirmation before each stage transition (default, recommended)
+2. **auto** — validate and advance automatically without prompting
+
+In both modes you can always override by running `/office:advance <slug>` manually."
+
+Read their answer (1 or 2, or the word). Default: `manual`.
+
 ---
 
 ## Write the config
@@ -71,6 +81,9 @@ design_system: "<system or "">"
 
 coverage_min: <N>
 lighthouse_min: <N>
+
+# Pipeline behaviour — manual | auto
+advance_mode: <advance_mode>
 ---
 
 # Project Configuration
@@ -112,6 +125,7 @@ test_cmd          npm run test
 design_system     shadcn/ui
 coverage_min      80
 lighthouse_min    90
+advance_mode      manual
 ```
 
 Ask: "What would you like to change? (list field names, or 'all' to redo everything, or 'cancel')"

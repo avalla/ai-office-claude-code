@@ -66,5 +66,5 @@ Active agents for this agency:
 Next steps:
 - Use /office:route to start a new request
 - Use /office:task-list to see the current board
-- Agent role guides: .windsurf/workflows/role-*.md
+- Agent role guides: `.ai-office/agents/<role>/personality.md`
 ```

@@ -21,7 +21,7 @@ If the file exists, display:
 - Last updated timestamp
 - Notes
 - Review log (last 3 entries)
-- Suggested next action based on current state (reference `.windsurf/workflows/pipeline.md` for valid transitions)
+- Suggested next action based on current state (use the pipeline transition table from `/office:advance` for valid transitions)
 
 If the file doesn't exist, scan `.ai-office/tasks/WIP/` and `.ai-office/tasks/TODO/` for files whose name or content matches the slug, and report what you find.
 

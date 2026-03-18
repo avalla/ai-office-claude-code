@@ -4,10 +4,11 @@
 # Usage: ./setup.sh [project-root]
 #
 # Flags:
-#   --agency <name>       Skip agency prompt
-#   --name <name>         Skip project name prompt
-#   --stack <preset>      Apply a stack preset (node-react|python-fastapi|go|mobile-rn)
-#   --non-interactive     Use all defaults, no prompts (requires --agency and --name)
+#   --agency <name>         Skip agency prompt
+#   --name <name>           Skip project name prompt
+#   --stack <preset>        Apply a stack preset (node-react|python-fastapi|go|mobile-rn)
+#   --advance-mode <mode>   Pipeline advance mode: manual | auto (default: manual)
+#   --non-interactive       Use all defaults, no prompts (requires --agency and --name)
 set -e
 
 FRAMEWORK_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -21,12 +22,14 @@ AGENCY_JSON="$AI_OFFICE/agency.json"
 AGENCY_ARG=""
 NAME_ARG=""
 STACK_ARG=""
+ADVANCE_MODE_ARG=""
 NON_INTERACTIVE=false
 for arg in "$@"; do
   case "$arg" in
     --agency=*) AGENCY_ARG="${arg#*=}" ;;
     --name=*)   NAME_ARG="${arg#*=}" ;;
     --stack=*)  STACK_ARG="${arg#*=}" ;;
+    --advance-mode=*) ADVANCE_MODE_ARG="${arg#*=}" ;;
     --non-interactive) NON_INTERACTIVE=true ;;
   esac
 done
@@ -137,9 +140,14 @@ DESIGN_SYSTEM="shadcn/ui"
 UI_FRAMEWORK="react"
 COVERAGE_MIN="80"
 LIGHTHOUSE_MIN="90"
+ADVANCE_MODE="manual"
 
 if [[ -n "$STACK_ARG" ]]; then
   apply_preset "$STACK_ARG"
+fi
+
+if [[ -n "$ADVANCE_MODE_ARG" ]]; then
+  ADVANCE_MODE="$ADVANCE_MODE_ARG"
 fi
 
 # ── Interactive prompts ───────────────────────────────────────────────────────
@@ -178,6 +186,10 @@ prompt_with_default "  Min coverage (%)      " "$COVERAGE_MIN"   COVERAGE_MIN
 prompt_with_default "  Min Lighthouse score  " "$LIGHTHOUSE_MIN" LIGHTHOUSE_MIN
 echo ""
 
+echo "Pipeline behaviour:"
+prompt_with_default "  Advance mode (manual|auto)" "$ADVANCE_MODE" ADVANCE_MODE
+echo ""
+
 TODAY="$(date +%Y-%m-%d)"
 
 # ── Write project.config.md ───────────────────────────────────────────────────
@@ -199,6 +211,9 @@ design_system: "$DESIGN_SYSTEM"
 # Quality thresholds — override agency defaults
 coverage_min: $COVERAGE_MIN
 lighthouse_min: $LIGHTHOUSE_MIN
+
+# Pipeline behaviour — manual | auto
+advance_mode: $ADVANCE_MODE
 
 # Optional: skip pipeline stages for this project
 # skip_stages: []

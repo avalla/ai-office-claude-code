@@ -1,6 +1,6 @@
 # AI Office Framework
 
-A file-based virtual agency system for AI-assisted software development. Provides a structured pipeline (router → PRD → ADR → plan → dev → QA → release) with a full kanban task board and role-based agent guidance — all as Claude Code slash commands.
+A file-based virtual agency system for AI-assisted software development. Provides a structured pipeline (router → PRD → ADR → plan → dev → QA → release) with milestones, a full kanban task board, and role-based agent guidance — all as Claude Code slash commands.
 
 ## Quick Start
 
@@ -15,6 +15,7 @@ A file-based virtual agency system for AI-assisted software development. Provide
 Then in Claude Code:
 
 ```
+/office:ai-office         ← interactive wizard (start here)
 /office:route add a new user profile editing feature
 ```
 
@@ -27,14 +28,16 @@ Then in Claude Code:
 
 | Command | Description |
 |---------|-------------|
+| `/office:ai-office` | Interactive wizard — discover commands and execute actions step by step |
 | `/office:route <request>` | Classify and route a request to the right pipeline stage |
 | `/office:status <slug> [state] [owner]` | Get or update pipeline status for a feature |
-| `/office:advance <slug> <evidence>` | Advance to next stage with evidence |
+| `/office:advance <slug> <evidence>` | Advance to next stage, reassign tasks to the next agent |
 | `/office:validate <slug> <stage>` | Check quality gates before advancing |
 | `/office:scaffold <slug> <stage>` | Create PRD / ADR / plan / review artifacts |
-| `/office:task-create <title> [priority:] [column:] [assignee:]` | Add a task to the kanban board |
+| `/office:milestone <create\|list\|status\|close\|archive>` | Manage project milestones |
+| `/office:task-create <title> [ms:] [priority:] [assignee:]` | Add a task (validates milestone exists) |
 | `/office:task-move <task-id> <column> [reason]` | Move a task between columns |
-| `/office:task-list [column] [assignee:]` | View the kanban board |
+| `/office:task-list [column] [ms:] [assignee:]` | View the kanban board |
 | `/office:report <status\|investor\|tech-debt\|audit>` | Generate reports |
 | `/office:review <path> [sectors:]` | Multi-sector document/code review |
 | `/office:graph [package] [format:]` | Repo dependency visualization |
@@ -51,20 +54,22 @@ After install, your project will have:
 ```
 .claude/
 └── commands/
-    └── office/          ← 16 slash commands
+    └── office/          ← 18 slash commands
         └── .version     ← installed version stamp
 
 .ai-office/
 ├── office-config.md     ← agency identity & config
-├── project.config.md    ← tech stack, agency, quality thresholds
+├── project.config.md    ← tech stack, agency, quality thresholds, advance_mode
 ├── agency.json          ← active agency selection
+├── milestones/          ← milestone definitions (M1.md, M2.md, …)
 ├── tasks/
-│   ├── BACKLOG/
+│   ├── BACKLOG/         ← task files: <MS>_T<NNN>-<slug>-<assignee>.md
 │   ├── TODO/
 │   ├── WIP/
 │   ├── REVIEW/
 │   ├── DONE/
-│   └── README.md
+│   ├── ARCHIVED/        ← old/superseded tasks
+│   └── README.md        ← column counts
 ├── docs/
 │   ├── prd/
 │   ├── adr/
@@ -73,6 +78,32 @@ After install, your project will have:
 ├── agencies/            ← agency configurations
 ├── scripts/             ← custom runbooks
 └── memory/
+```
+
+## Task File Format
+
+Tasks are named `<MS>_T<NNN>-<slug>-<assignee>.md` (e.g. `M1_T003-fix-upload-timeout-developer.md`).
+
+Frontmatter fields: **ID**, **Milestone**, **Priority**, **Status**, **Assignee**, **Dependencies**, **Created**, **Started**, **Completed**, **Estimate**, and a **Time Log** table with per-agent hours.
+
+`M0` is reserved for unscheduled/misc tasks. All other milestones must be created with `/office:milestone create` before tasks can reference them.
+
+## Milestone Workflow
+
+```bash
+# 1. Define milestones first
+/office:milestone create M1 "Auth & Onboarding" target:2026-04-01
+/office:milestone create M2 "Billing" target:2026-05-01
+
+# 2. Create tasks within a milestone
+/office:task-create "Setup database schema" ms:M1 assignee:Developer estimate:4h
+
+# 3. Check milestone progress
+/office:milestone status M1
+
+# 4. Close and archive when done
+/office:milestone close M1
+/office:milestone archive M1
 ```
 
 ## Agencies
@@ -89,7 +120,7 @@ Five agency templates are bundled and installed during setup:
 
 ## Project Configuration
 
-`setup.sh` (or `/office:setup` inside Claude Code) writes `.ai-office/project.config.md`:
+`setup.sh` (or `/office:setup`) writes `.ai-office/project.config.md`:
 
 ```yaml
 ---
@@ -103,10 +134,13 @@ ui_framework: react
 design_system: "shadcn/ui"
 coverage_min: 80
 lighthouse_min: 90
+advance_mode: manual   # manual | auto
 ---
 ```
 
-`/office:validate` and `/office:review` read this file to apply project-specific checks and thresholds.
+`advance_mode` controls how `/office:advance` behaves:
+- `manual` — pauses and asks for confirmation before each stage transition (default)
+- `auto` — validates and advances automatically without prompting
 
 ## Pipeline
 
@@ -115,6 +149,8 @@ router → prd → adr → plan → tasks → dev → qa → review → user_acc
                                      ↘ ux_research → design_ui ────────────────────────────┘
                                                    ↘ security → dev / qa
 ```
+
+Each stage transition via `/office:advance` automatically reassigns open tasks to the responsible agent for the incoming stage.
 
 ## Updating
 
