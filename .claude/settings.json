@@ -1,0 +1,15 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:github.com)",
+      "WebFetch(domain:raw.githubusercontent.com)",
+      "Bash(/tmp/ai-office-changes/agency.md:*)",
+      "Bash(for agent:*)",
+      "Read(//Users/andrea/dev/node/ai-office-claude-code/skeleton/.ai-office/agents/**)",
+      "Bash(/dev/null done:*)"
+    ],
+    "additionalDirectories": [
+      "/Users/andrea/dev/idt/autoepoque/.ai-office/docs/runbooks"
+    ]
+  }
+}
