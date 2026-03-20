@@ -47,7 +47,7 @@ get_file_version() {
 # ── Show what will change ─────────────────────────────────────────────────────
 echo "Skills to update:"
 any_change=0
-for src_dir in "$FRAMEWORK_DIR/skeleton/.claude/skills/"/office-*/; do
+for src_dir in "$FRAMEWORK_DIR/skeleton/.claude/skills/"/office*/; do
   skill_name="$(basename "$src_dir")"
   src="$src_dir/SKILL.md"
   dst="$PROJECT_ROOT/.claude/skills/$skill_name/SKILL.md"
@@ -82,6 +82,14 @@ mkdir -p "$PROJECT_ROOT/.claude/skills"
 cp -r "$FRAMEWORK_DIR/skeleton/.claude/skills/"* "$PROJECT_ROOT/.claude/skills/"
 echo "$AVAILABLE" > "$INSTALLED_FILE"
 echo "  ✅ Skills updated"
+
+# ── Remove legacy commands directory if present ───────────────────────────────
+if [[ -d "$PROJECT_ROOT/.claude/commands/office" ]]; then
+  rm -rf "$PROJECT_ROOT/.claude/commands/office"
+  # Remove parent if now empty
+  rmdir "$PROJECT_ROOT/.claude/commands" 2>/dev/null || true
+  echo "  🗑️  Removed legacy .claude/commands/office/"
+fi
 
 # ── Ensure .ai-office/ structure still complete ───────────────────────────────
 echo "→ Checking .ai-office/ structure..."
