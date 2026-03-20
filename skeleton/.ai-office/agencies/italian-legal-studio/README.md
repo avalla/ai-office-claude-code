@@ -63,7 +63,7 @@ professional_liability_insurance: "[policy number]"
 ### Step 1: Client Intake & Routing
 
 ```bash
-/office:route Client requests defense memo for civil dispute
+/office-route Client requests defense memo for civil dispute
 
 # AI Office: Analyzes context, creates intake notes
 # Type: Legal document - defense memo
@@ -73,7 +73,7 @@ professional_liability_insurance: "[policy number]"
 ### Step 2: Create Case File
 
 ```bash
-/office:milestone create M1 "Civil Dispute - Case ABC-2026" target:2026-04-30
+/office-milestone create M1 "Civil Dispute - Case ABC-2026" target:2026-04-30
 
 # AI Office: Suggests tasks
 # - Legal research (precedent, statute review)
@@ -87,7 +87,7 @@ professional_liability_insurance: "[policy number]"
 ### Step 3: Research Phase
 
 ```bash
-/office:task-move M1_T001 WIP "Started research on applicable case law"
+/office-task-move M1_T001 WIP "Started research on applicable case law"
 
 # Developer (in this case, Associate Attorney) starts research:
 # - Search Italian legal databases (Ius Online, CECA)
@@ -99,7 +99,7 @@ professional_liability_insurance: "[policy number]"
 ### Step 4: Compliance Check
 
 ```bash
-/office:task-move M1_T002 WIP "Verifying jurisdiction and deadlines"
+/office-task-move M1_T002 WIP "Verifying jurisdiction and deadlines"
 
 # Compliance Officer reviews:
 # - Court jurisdiction confirmed
@@ -112,7 +112,7 @@ professional_liability_insurance: "[policy number]"
 ### Step 5: Document Drafting
 
 ```bash
-/office:task-create "Draft memoria difensiva - ABC case" \
+/office-task-create "Draft memoria difensiva - ABC case" \
   ms:M1 priority:HIGH assignee:"Associate Attorney" \
   estimate:6h labels:litigation,civil,urgent \
   slug:civil-dispute-abc
@@ -131,7 +131,7 @@ professional_liability_insurance: "[policy number]"
 ### Step 6: Internal Review
 
 ```bash
-/office:task-move M1_T003 REVIEW "Draft complete, ready for review"
+/office-task-move M1_T003 REVIEW "Draft complete, ready for review"
 
 # Reviewer checks:
 # - Italian grammar and legal terminology
@@ -145,7 +145,7 @@ professional_liability_insurance: "[policy number]"
 ### Step 7: Partner Approval
 
 ```bash
-/office:verify M1_T003
+/office-verify M1_T003
 
 # AI Office: Runs QA verification
 # Partner (Senior Partner) reviews:
@@ -158,7 +158,7 @@ professional_liability_insurance: "[policy number]"
 ### Step 8: Delivery
 
 ```bash
-/office:task-move M1_T004 DONE "Approved by partner, ready for filing"
+/office-task-move M1_T004 DONE "Approved by partner, ready for filing"
 
 # Practice Manager:
 # - Signs document if required
@@ -172,7 +172,7 @@ professional_liability_insurance: "[policy number]"
 ### Step 9: Closure & Billing
 
 ```bash
-/office:milestone status M1
+/office-milestone status M1
 
 # Shows:
 # - 4/6 tasks done
@@ -180,7 +180,7 @@ professional_liability_insurance: "[policy number]"
 # - Dates: Started March 20, Completed April 5
 # - Client deadline: April 30 ✅ (met)
 
-/office:milestone close M1
+/office-milestone close M1
 
 # Generates invoice and practice manager handles:
 # - Bill client for 18.5 hours @ €300/hr = €5,550
@@ -195,7 +195,7 @@ professional_liability_insurance: "[policy number]"
 ### Senior Partner (Managing Partner)
 **Decisions:** Final approval, signature authority, strategy
 ```
-/office:role senior-partner
+/office-role senior-partner
 
 # Output shows:
 # - Authority to sign all documents
@@ -207,7 +207,7 @@ professional_liability_insurance: "[policy number]"
 ### Associate Attorney (Lead Counsel)
 **Work:** Document drafting, legal research
 ```
-/office:role associate-attorney
+/office-role associate-attorney
 
 # Responsibilities:
 # - Conduct legal research in Italian databases
@@ -219,7 +219,7 @@ professional_liability_insurance: "[policy number]"
 ### Paralegal
 **Support:** Document assembly, formatting, filing
 ```
-/office:role paralegal
+/office-role paralegal
 
 # Responsibilities:
 # - Assemble documents per Italian standards
@@ -232,7 +232,7 @@ professional_liability_insurance: "[policy number]"
 ### Compliance Officer (NEW)
 **Verification:** Regulatory checks, code compliance
 ```
-/office:role compliance-officer
+/office-role compliance-officer
 
 # Responsibilities:
 # - Verify Italian law compliance
@@ -245,7 +245,7 @@ professional_liability_insurance: "[policy number]"
 ### Reviewer (QA)
 **Quality:** Grammar, citations, formatting
 ```
-/office:role reviewer
+/office-role reviewer
 
 # Responsibilities:
 # - Italian grammar and terminology
@@ -257,7 +257,7 @@ professional_liability_insurance: "[policy number]"
 ### Practice Manager (Operations)
 **Admin:** Calendar, billing, deadlines
 ```
-/office:role practice-manager
+/office-role practice-manager
 
 # Responsibilities:
 # - Manage client calendar
@@ -335,7 +335,7 @@ Italian law has strict deadlines:
 ### Invoice Generation
 
 ```bash
-/office:report investor
+/office-report investor
 
 # Shows:
 # Completed cases: 1
@@ -410,18 +410,18 @@ Research (6h) → Compliance (3h) → Multiple Drafts (8h)
 
 ```bash
 # View agent guidance
-/office:role associate-attorney
-/office:role compliance-officer
-/office:role senior-partner
+/office-role associate-attorney
+/office-role compliance-officer
+/office-role senior-partner
 
 # Check pipeline
-/office:milestone status M1
+/office-milestone status M1
 
 # View templates
 cat .ai-office/agencies/italian-legal-studio/templates.md
 
 # Track deadlines
-/office:task-list | grep "deadline"
+/office-task-list | grep "deadline"
 ```
 
 ---

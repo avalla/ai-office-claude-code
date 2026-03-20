@@ -9,11 +9,11 @@ Architecture Decision Records for each feature/project slug.
 ## Create an ADR
 
 ```
-/office:scaffold <slug> adr
+/office-scaffold <slug> adr
 ```
 
 ## Validate an ADR
 
 ```
-/office:validate <slug> adr
+/office-validate <slug> adr
 ```

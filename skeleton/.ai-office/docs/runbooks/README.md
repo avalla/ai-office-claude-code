@@ -12,7 +12,7 @@ Operational documents: plans, status files, review reports, and task breakdowns.
 ## Create a runbook
 
 ```
-/office:scaffold <slug> status
-/office:scaffold <slug> plan
-/office:scaffold <slug> review
+/office-scaffold <slug> status
+/office-scaffold <slug> plan
+/office-scaffold <slug> review
 ```

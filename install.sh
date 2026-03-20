@@ -18,18 +18,18 @@ echo ""
 
 # ── Stamp-only mode ───────────────────────────────────────────────────────────
 if [[ "$STAMP_ONLY" == "--stamp-only" ]]; then
-  mkdir -p "$PROJECT_ROOT/.claude/commands/office"
-  echo "$VERSION" > "$PROJECT_ROOT/.claude/commands/office/.version"
+  mkdir -p "$PROJECT_ROOT/.claude/skills"
+  echo "$VERSION" > "$PROJECT_ROOT/.claude/skills/.version"
   echo "✅ Version stamped: $VERSION"
   exit 0
 fi
 
-# ── Install Claude Code commands ──────────────────────────────────────────────
-echo "→ Installing commands to .claude/commands/office/"
-mkdir -p "$PROJECT_ROOT/.claude/commands/office"
-cp "$SKELETON/.claude/commands/office/"*.md "$PROJECT_ROOT/.claude/commands/office/"
-echo "$VERSION" > "$PROJECT_ROOT/.claude/commands/office/.version"
-echo "  ✅ $(ls "$SKELETON/.claude/commands/office/"*.md | wc -l | tr -d ' ') commands installed"
+# ── Install Claude Code skills ────────────────────────────────────────────────
+echo "→ Installing skills to .claude/skills/"
+mkdir -p "$PROJECT_ROOT/.claude/skills"
+cp -r "$SKELETON/.claude/skills/"* "$PROJECT_ROOT/.claude/skills/"
+echo "$VERSION" > "$PROJECT_ROOT/.claude/skills/.version"
+echo "  ✅ $(ls -d "$SKELETON/.claude/skills/"/office-* | wc -l | tr -d ' ') skills installed"
 
 # CLAUDE.md (only if not exists)
 if [[ ! -f "$PROJECT_ROOT/.claude/CLAUDE.md" ]]; then
@@ -123,12 +123,12 @@ echo ""
 if [[ ! -f "$AI_OFFICE/project.config.md" ]]; then
   echo "Next: configure your project"
   echo "  ./setup.sh $PROJECT_ROOT   ← interactive setup (agency, tech stack)"
-  echo "  /office:setup              ← same, inside Claude Code"
+  echo "  /office-setup              ← same, inside Claude Code"
 else
   echo "Get started:"
-  echo "  /office:ai-office          ← interactive wizard"
-  echo "  /office:route <describe your task>"
-  echo "  /office:doctor"
+  echo "  /office                    ← interactive wizard"
+  echo "  /office-route <describe your task>"
+  echo "  /office-doctor"
 fi
 
 echo ""

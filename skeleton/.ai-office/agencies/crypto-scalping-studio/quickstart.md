@@ -14,7 +14,7 @@ agency: crypto-scalping-studio
 Select **Crypto Scalping Studio** during setup, or specify it directly:
 
 ```bash
-/office:setup agency:crypto-scalping-studio
+/office-setup agency:crypto-scalping-studio
 ```
 
 ---
@@ -26,7 +26,7 @@ This walks through a complete strategy from brief to live deployment.
 ### Step 1 — Route the Request
 
 ```
-/office:route Design a BTC/USDT 5-minute scalping strategy using EMA crossover and RSI confirmation
+/office-route Design a BTC/USDT 5-minute scalping strategy using EMA crossover and RSI confirmation
 ```
 
 Router classifies the request, runs the discussion phase, and suggests the standard pipeline starting at `10_signal_brief`.
@@ -50,7 +50,7 @@ PM captures the brief. Example output at `docs/brief/btc-ema-rsi-brief.md`:
 ```
 
 ```
-/office:advance btc-ema-rsi brief "Brief captured and approved"
+/office-advance btc-ema-rsi brief "Brief captured and approved"
 ```
 
 ---
@@ -58,7 +58,7 @@ PM captures the brief. Example output at `docs/brief/btc-ema-rsi-brief.md`:
 ### Step 3 — Set Risk Parameters (Architect / Risk Manager)
 
 ```
-/office:scaffold btc-ema-rsi adr
+/office-scaffold btc-ema-rsi adr
 ```
 
 Architect produces `docs/adr/btc-ema-rsi-risk.md` with:
@@ -68,7 +68,7 @@ Architect produces `docs/adr/btc-ema-rsi-risk.md` with:
 - Leverage: 1× (spot equivalent)
 
 ```
-/office:advance btc-ema-rsi adr "Risk parameters approved"
+/office-advance btc-ema-rsi adr "Risk parameters approved"
 ```
 
 ---
@@ -78,7 +78,7 @@ Architect produces `docs/adr/btc-ema-rsi-risk.md` with:
 Signal Analyst takes the brief and produces a full signal spec:
 
 ```
-/office:scaffold btc-ema-rsi signal_design
+/office-scaffold btc-ema-rsi signal_design
 ```
 
 Output at `docs/brief/btc-ema-rsi-signal-spec.md`:
@@ -89,7 +89,7 @@ Output at `docs/brief/btc-ema-rsi-signal-spec.md`:
 - **Parameter ranges for backtest**: EMA fast 7–11, EMA slow 18–25, RSI period 12–16
 
 ```
-/office:advance btc-ema-rsi signal_design "Signal spec reviewed and approved"
+/office-advance btc-ema-rsi signal_design "Signal spec reviewed and approved"
 ```
 
 ---
@@ -99,14 +99,14 @@ Output at `docs/brief/btc-ema-rsi-signal-spec.md`:
 Developer implements the strategy in Python using CCXT:
 
 ```
-/office:scaffold btc-ema-rsi implementation
-/office:advance btc-ema-rsi implementation "Strategy coded and unit-tested"
+/office-scaffold btc-ema-rsi implementation
+/office-advance btc-ema-rsi implementation "Strategy coded and unit-tested"
 ```
 
 QA runs the backtest on 6-month OHLCV data with walk-forward validation:
 
 ```
-/office:run-tests btc-ema-rsi
+/office-run-tests btc-ema-rsi
 ```
 
 QA backtest report (`docs/runbooks/btc-ema-rsi-backtest.md`) must show:
@@ -119,8 +119,8 @@ QA backtest report (`docs/runbooks/btc-ema-rsi-backtest.md`) must show:
 | OOS Sharpe (walk-forward) | 1.61 | ≥ 1.0 | ✅ |
 
 ```
-/office:verify btc-ema-rsi backtest
-/office:advance btc-ema-rsi backtest "Backtest accepted — all thresholds met"
+/office-verify btc-ema-rsi backtest
+/office-advance btc-ema-rsi backtest "Backtest accepted — all thresholds met"
 ```
 
 ---
@@ -130,8 +130,8 @@ QA backtest report (`docs/runbooks/btc-ema-rsi-backtest.md`) must show:
 Reviewer checks for overfitting, parameter cliff-edges, and logic errors:
 
 ```
-/office:review btc-ema-rsi
-/office:advance btc-ema-rsi review "Strategy reviewed — no overfitting detected"
+/office-review btc-ema-rsi
+/office-advance btc-ema-rsi review "Strategy reviewed — no overfitting detected"
 ```
 
 ---
@@ -141,14 +141,14 @@ Reviewer checks for overfitting, parameter cliff-edges, and logic errors:
 QA runs the bot in paper-trade mode for ≥ 7 days on live feed:
 
 ```
-/office:scaffold btc-ema-rsi paper_trade
+/office-scaffold btc-ema-rsi paper_trade
 ```
 
 After 7+ days, QA produces `docs/runbooks/btc-ema-rsi-paper.md`. Acceptable degradation vs backtest: ≤ 20% Sharpe drop.
 
 ```
-/office:verify btc-ema-rsi paper_trade
-/office:advance btc-ema-rsi paper_trade "Paper trade approved — 7 days, within tolerance"
+/office-verify btc-ema-rsi paper_trade
+/office-advance btc-ema-rsi paper_trade "Paper trade approved — 7 days, within tolerance"
 ```
 
 ---
@@ -158,8 +158,8 @@ After 7+ days, QA produces `docs/runbooks/btc-ema-rsi-paper.md`. Acceptable degr
 Release Manager packages the deployment runbook and authorises go-live:
 
 ```
-/office:scaffold btc-ema-rsi deploy
-/office:advance btc-ema-rsi deploy "Live deployment authorised by CEO + Release Manager"
+/office-scaffold btc-ema-rsi deploy
+/office-advance btc-ema-rsi deploy "Live deployment authorised by CEO + Release Manager"
 ```
 
 Deployment checklist in `docs/runbooks/btc-ema-rsi-deploy.md`:
@@ -176,8 +176,8 @@ Deployment checklist in `docs/runbooks/btc-ema-rsi-deploy.md`:
 Ops monitors live performance weekly and produces `docs/runbooks/btc-ema-rsi-status.md`:
 
 ```
-/office:report btc-ema-rsi velocity
-/office:status btc-ema-rsi
+/office-report btc-ema-rsi velocity
+/office-status btc-ema-rsi
 ```
 
 If Sharpe drops below 1.0 over a 2-week rolling window: Ops triggers the **Underperformance Recovery Pipeline** → Signal Analyst diagnoses regime shift → Scalping Engineer tunes parameters → backtest again.
@@ -190,14 +190,14 @@ If drawdown > circuit breaker threshold: Ops triggers **Emergency Halt Pipeline*
 
 | Command | When to use |
 |---------|-------------|
-| `/office:route <request>` | Start any new strategy or feature |
-| `/office:advance <slug> <stage> "<note>"` | Move to next pipeline stage |
-| `/office:verify <slug> <stage>` | QA verification before advancing |
-| `/office:scaffold <slug> <stage>` | Generate stage artifact template |
-| `/office:run-tests <slug>` | Execute backtest and parse results |
-| `/office:report <slug> velocity` | Weekly PnL and throughput metrics |
-| `/office:task-list` | View current kanban across all strategies |
-| `/office:status <slug>` | Get current pipeline state for a strategy |
+| `/office-route <request>` | Start any new strategy or feature |
+| `/office-advance <slug> <stage> "<note>"` | Move to next pipeline stage |
+| `/office-verify <slug> <stage>` | QA verification before advancing |
+| `/office-scaffold <slug> <stage>` | Generate stage artifact template |
+| `/office-run-tests <slug>` | Execute backtest and parse results |
+| `/office-report <slug> velocity` | Weekly PnL and throughput metrics |
+| `/office-task-list` | View current kanban across all strategies |
+| `/office-status <slug>` | Get current pipeline state for a strategy |
 
 ---
 

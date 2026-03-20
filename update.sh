@@ -8,7 +8,7 @@ PROJECT_ROOT="${1:-.}"
 PROJECT_ROOT="$(cd "$PROJECT_ROOT" && pwd)"
 
 AVAILABLE="$(cat "$FRAMEWORK_DIR/VERSION")"
-INSTALLED_FILE="$PROJECT_ROOT/.claude/commands/office/.version"
+INSTALLED_FILE="$PROJECT_ROOT/.claude/skills/.version"
 INSTALLED="$(cat "$INSTALLED_FILE" 2>/dev/null || echo "unknown")"
 
 echo "AI Office Framework — Update"
@@ -45,29 +45,30 @@ get_file_version() {
 }
 
 # ── Show what will change ─────────────────────────────────────────────────────
-echo "Commands to update:"
+echo "Skills to update:"
 any_change=0
-for src in "$FRAMEWORK_DIR/skeleton/.claude/commands/office/"*.md; do
-  name="$(basename "$src")"
-  dst="$PROJECT_ROOT/.claude/commands/office/$name"
+for src_dir in "$FRAMEWORK_DIR/skeleton/.claude/skills/"/office-*/; do
+  skill_name="$(basename "$src_dir")"
+  src="$src_dir/SKILL.md"
+  dst="$PROJECT_ROOT/.claude/skills/$skill_name/SKILL.md"
   if [[ ! -f "$dst" ]]; then
-    echo "  + $name (new)"
+    echo "  + $skill_name (new)"
     any_change=1
   else
     src_ver="$(get_file_version "$src")"
     dst_ver="$(get_file_version "$dst")"
     if [[ -n "$src_ver" && -n "$dst_ver" && "$src_ver" != "$dst_ver" ]]; then
-      echo "  ~ $name (v$dst_ver → v$src_ver)"
+      echo "  ~ $skill_name (v$dst_ver → v$src_ver)"
       any_change=1
     elif ! diff -q "$src" "$dst" > /dev/null 2>&1; then
-      echo "  ~ $name (changed)"
+      echo "  ~ $skill_name (changed)"
       any_change=1
     fi
   fi
 done
 
 if [[ "$any_change" -eq 0 ]]; then
-  echo "  (no command files changed)"
+  echo "  (no skill files changed)"
 fi
 echo ""
 
@@ -76,11 +77,11 @@ read -p "Apply update v$INSTALLED → v$AVAILABLE? [Y/n] " confirm
 
 # ── Apply update ──────────────────────────────────────────────────────────────
 echo ""
-echo "→ Updating commands..."
-mkdir -p "$PROJECT_ROOT/.claude/commands/office"
-cp "$FRAMEWORK_DIR/skeleton/.claude/commands/office/"*.md "$PROJECT_ROOT/.claude/commands/office/"
+echo "→ Updating skills..."
+mkdir -p "$PROJECT_ROOT/.claude/skills"
+cp -r "$FRAMEWORK_DIR/skeleton/.claude/skills/"* "$PROJECT_ROOT/.claude/skills/"
 echo "$AVAILABLE" > "$INSTALLED_FILE"
-echo "  ✅ Commands updated"
+echo "  ✅ Skills updated"
 
 # ── Ensure .ai-office/ structure still complete ───────────────────────────────
 echo "→ Checking .ai-office/ structure..."

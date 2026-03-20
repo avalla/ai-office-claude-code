@@ -30,14 +30,14 @@ Use these slash commands for all framework operations — do not manipulate `.ai
 
 | Operation | Command |
 |-----------|---------|
-| Route a new request | `/office:route <description>` |
-| Advance pipeline stage | `/office:advance <slug> <evidence>` |
-| Scaffold an artifact | `/office:scaffold <slug> <stage>` |
-| Validate a stage gate | `/office:validate <slug> <stage>` |
-| Multi-sector review | `/office:review <path>` |
-| Create a task | `/office:task-create <title>` |
-| Move a task | `/office:task-move <id> <column>` |
-| List tasks | `/office:task-list` |
-| Run tests | `/office:run-tests <slug>` |
-| Scan for secrets | `/office:validate-secrets` |
-| Health check | `/office:doctor` |
+| Route a new request | `/office-route <description>` |
+| Advance pipeline stage | `/office-advance <slug> <evidence>` |
+| Scaffold an artifact | `/office-scaffold <slug> <stage>` |
+| Validate a stage gate | `/office-validate <slug> <stage>` |
+| Multi-sector review | `/office-review <path>` |
+| Create a task | `/office-task-create <title>` |
+| Move a task | `/office-task-move <id> <column>` |
+| List tasks | `/office-task-list` |
+| Run tests | `/office-run-tests <slug>` |
+| Scan for secrets | `/office-validate-secrets` |
+| Health check | `/office-doctor` |

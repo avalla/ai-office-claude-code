@@ -9,11 +9,11 @@ Product Requirements Documents for each feature/project slug.
 ## Create a PRD
 
 ```
-/office:scaffold <slug> prd
+/office-scaffold <slug> prd
 ```
 
 ## Validate a PRD
 
 ```
-/office:validate <slug> prd
+/office-validate <slug> prd
 ```

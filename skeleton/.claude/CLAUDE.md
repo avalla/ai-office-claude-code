@@ -85,11 +85,11 @@ Every task is developed in its own git branch and squash-merged into `dev` at th
 - Examples: `task/M1/T003-fix-upload-timeout`, `task/sprint-2/T001-billing-ui`
 
 **Rules:**
-- Create the branch when the task moves to `WIP` (handled automatically by `/office:task-move`).
+- Create the branch when the task moves to `WIP` (handled automatically by `/office-task-move`).
 - Never commit directly to `dev` while the iteration is open.
 - Keep one task per branch — no cross-task commits.
 - Squash merge (not rebase, not regular merge) to keep `dev` history linear and readable.
-- All branches for a milestone are merged when `/office:milestone close <id>` is called.
+- All branches for a milestone are merged when `/office-milestone close <id>` is called.
 
 **Commit message format for squash merges:**
 ```
@@ -120,11 +120,11 @@ Source of truth and precedence when conflicts exist:
 4. This conversation
 
 **Pipeline (non-negotiable):**
-- Always start with `/office:route <task>` for any new project or feature request.
+- Always start with `/office-route <task>` for any new project or feature request.
 - Never bypass the router or jump directly to implementation without PRD/ADR/plan artifacts.
-- Every written or updated artifact must pass `/office:review <path>` before advancing.
+- Every written or updated artifact must pass `/office-review <path>` before advancing.
 - Never say "done" without **recorded evidence** (tests passed, lint clean, build succeeded) in the status file.
-- Use `/office:validate <slug> <stage>` to verify quality gates before `/office:advance`.
+- Use `/office-validate <slug> <stage>` to verify quality gates before `/office-advance`.
 - Keep diffs small and focused.
 - English-only: documentation, variable names, artifact text, and user-facing strings.
 
