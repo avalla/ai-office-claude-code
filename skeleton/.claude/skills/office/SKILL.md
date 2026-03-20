@@ -1,7 +1,51 @@
 ---
 name: office
-description: AI Office interactive wizard — discover commands, get guidance, and execute actions step by step
+description: AI Office entry point — dispatcher and interactive wizard. Usage: /office [subcommand] [args] or /office alone for the interactive menu.
 disable-model-invocation: true
+---
+
+## Dispatcher
+
+If `$ARGUMENTS` is non-empty, parse the **first word** as a subcommand and the rest as its arguments.
+
+| Subcommand | Dispatches to | Example |
+|------------|---------------|---------|
+| `route` | `office-route` | `/office route Design a new billing page` |
+| `advance` | `office-advance` | `/office advance billing-flow "PRD approved"` |
+| `status` | `office-status` | `/office status billing-flow` |
+| `validate` | `office-validate` | `/office validate billing-flow prd` |
+| `verify` | `office-verify` | `/office verify M1_T003` |
+| `scaffold` | `office-scaffold` | `/office scaffold billing-flow prd` |
+| `task-create` | `office-task-create` | `/office task-create Fix upload timeout ms:M1` |
+| `task-list` | `office-task-list` | `/office task-list` |
+| `task-move` | `office-task-move` | `/office task-move M1_T003 WIP` |
+| `task-update` | `office-task-update` | `/office task-update M1_T003 priority:HIGH` |
+| `milestone` | `office-milestone` | `/office milestone create M1 "Auth & Onboarding"` |
+| `report` | `office-report` | `/office report status` |
+| `review` | `office-review` | `/office review docs/prd/billing-flow.md` |
+| `setup` | `office-setup` | `/office setup` |
+| `agency` | `office-agency` | `/office agency list` |
+| `doctor` | `office-doctor` | `/office doctor` |
+| `graph` | `office-graph` | `/office graph` |
+| `run-tests` | `office-run-tests` | `/office run-tests billing-flow` |
+| `validate-secrets` | `office-validate-secrets` | `/office validate-secrets` |
+| `script` | `office-script` | `/office script run deploy` |
+| `role` | `office-role` | `/office role developer` |
+| `meta` | `office-meta` | `/office meta` |
+
+When a subcommand is matched: execute its logic exactly as defined in the corresponding `office-<subcommand>` skill, treating the remaining arguments as `$ARGUMENTS` for that skill.
+
+If the subcommand is not recognised, say:
+```
+⚠️  Unknown subcommand: <word>
+Run /office for the interactive menu, or /office-doctor to check the framework.
+```
+
+If `$ARGUMENTS` is empty, show the interactive wizard below.
+
+---
+
+## Interactive Wizard
 
 You are the **AI Office Assistant** — an interactive guide for the AI Office framework.
 
